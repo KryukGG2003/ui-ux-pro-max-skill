@@ -29,6 +29,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Manrope:wght@300;400;500;600;700&display=swap"></noscript>
 
+<link rel="preload" as="image" href="assets/img/hero-atmos.jpg">
 <link rel="stylesheet" href="assets/css/styles.css">
 
 <script>
@@ -55,6 +56,20 @@
 
 <body>
 <a class="skip-link" href="#main">Перейти к содержанию</a>
+<div class="loader" id="loader" role="status" aria-live="polite" aria-label="Загрузка страницы">
+  <svg class="loader__mark" id="loaderMark" viewBox="0 0 40 40" fill="none" stroke="currentColor"
+       stroke-width="1.2" stroke-linecap="round" aria-hidden="true">
+    <circle cx="20" cy="20" r="18"/>
+    <path d="M20 31c0-7 3-12 8-15-1 8-4 13-8 15z"/>
+    <path d="M20 31c0-7-3-12-8-15 1 8 4 13 8 15z"/>
+    <path d="M20 31V16"/>
+  </svg>
+  <p class="loader__word">садхана</p>
+  <div class="loader__bar"><span class="loader__fill" id="loaderFill"></span></div>
+  <p class="loader__num"><span id="loaderNum">0</span>%</p>
+</div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 <div class="scroll-progress" aria-hidden="true"></div>
 
@@ -118,6 +133,10 @@
 
 <!-- ============ 01 · HERO ============ -->
 <section class="hero" id="hero">
+  <div class="hero__photo" aria-hidden="true">
+    <!-- ЗАМЕНИТЬ НА ФОТО: широкий кадр практики, 1800×1150 и шире -->
+    <img src="assets/img/hero-atmos.jpg" alt="" width="1800" height="1150" fetchpriority="high" data-parallax-img="0.12">
+  </div>
   <div class="hero__bg" aria-hidden="true">
     <div class="hero__blob hero__blob--1" data-parallax="0.10"></div>
     <div class="hero__blob hero__blob--2" data-parallax="-0.07"></div>
@@ -184,6 +203,18 @@
   </div>
 </section>
 
+<!-- ============ МАНИФЕСТ ============ -->
+<section class="manifesto" aria-labelledby="manifesto-title">
+  <div class="manifesto__bg" aria-hidden="true">
+    <!-- ЗАМЕНИТЬ НА ФОТО: спокойный горизонтальный кадр, 2000×620 -->
+    <img src="assets/img/divider-haze.jpg" alt="" width="2000" height="620" loading="lazy" data-parallax-img="-0.08">
+  </div>
+  <div class="container manifesto__inner">
+    <h2 class="manifesto__text" id="manifesto-title" data-words>Мы не обещаем просветления за месяц. Мы даём ритм, в котором тело, дыхание и ум постепенно приходят в согласие.</h2>
+    <p class="manifesto__sign">садхана — ежедневная практика</p>
+  </div>
+</section>
+
 <!-- ============ 02 · ЧЕТЫРЕ ЛИНИИ ПРАКТИКИ ============ -->
 <section class="section" id="traditions" aria-labelledby="traditions-title">
   <div class="container">
@@ -194,30 +225,26 @@
         <span class="line-mask"><span>одной традиции</span></span>
       </h2>
       <p class="lead" data-reveal>
-        Мы не смешиваем всё в один урок. Каждое направление живёт по своим законам —
-        и вместе они складываются в цельную практику: тело, дыхание, питание, звук.
+        Мы не смешиваем всё в один урок. Каждое направление живёт по
+        своим законам — и вместе они складываются в цельную практику:
+        тело, дыхание, питание, звук.
       </p>
     </div>
+  </div>
 
-    <div class="traditions">
-
-      <article class="tradition card card--hover" data-reveal>
-        <span class="tradition__num" aria-hidden="true">01</span>
-        <svg class="tradition__icon" viewBox="0 0 64 64" fill="none" stroke="currentColor"
-             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" data-draw aria-hidden="true">
-          <path d="M10 18a22 22 0 0 1 44 0"/>
-          <circle cx="32" cy="26" r="6"/>
-          <path d="M20 50c0-9 5-15 12-15s12 6 12 15"/>
-          <path d="M14 50c6 6 30 6 36 0"/>
-          <path d="M14 50c7-3 29-3 36 0"/>
-        </svg>
-        <h3 class="tradition__title">Хатха-йога</h3>
-        <p class="tradition__sub">в традиции Иша</p>
-        <p class="tradition__text">
-          Классическая хатха без музыки, соревнования и «растяжки любой ценой».
-          Точная геометрия асан, работа с дыханием и внутренней энергией.
-          Осваиваем последовательности шаг за шагом — так, как их передают.
-        </p>
+  <!-- Лента: без JS — обычная горизонтальная прокрутка,
+       с GSAP превращается в закреплённую сцену со скроллом вбок -->
+  <div class="rail" data-rail>
+    <div class="rail__track" data-rail-track>
+      <article class="panel">
+        <div class="frame panel__frame" data-curtain>
+          <!-- ЗАМЕНИТЬ НА ФОТО: практика хатха-йоги, вертикальный кадр 1000×1250 -->
+          <img src="assets/img/tradition-hatha.jpg" alt="Практика хатха-йоги" width="1000" height="1250" loading="lazy" data-parallax-img="0.07">
+        </div>
+        <p class="panel__num">01</p>
+        <h3 class="panel__title">Хатха-йога</h3>
+        <p class="panel__sub">в традиции Иша</p>
+        <p class="panel__text">Классическая хатха без музыки, соревнования и «растяжки любой ценой». Точная геометрия асан, работа с дыханием и внутренней энергией. Осваиваем последовательности шаг за шагом — так, как их передают.</p>
         <ul class="chip-row" aria-label="Что входит в направление">
           <li class="chip">Сурья Крия</li>
           <li class="chip">Ангамардана</li>
@@ -225,26 +252,15 @@
           <li class="chip">Бхута Шуддхи</li>
         </ul>
       </article>
-
-      <article class="tradition card card--hover" data-reveal>
-        <span class="tradition__num" aria-hidden="true">02</span>
-        <svg class="tradition__icon" viewBox="0 0 64 64" fill="none" stroke="currentColor"
-             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" data-draw aria-hidden="true">
-          <circle cx="26" cy="16" r="5"/>
-          <path d="M26 21v16"/>
-          <path d="M26 37l-8 15"/>
-          <path d="M26 37l9 15"/>
-          <path d="M17 27l9-3 12 5"/>
-          <path d="M48 8L38 56"/>
-          <path d="M10 56h44"/>
-        </svg>
-        <h3 class="tradition__title">Каларипаятту</h3>
-        <p class="tradition__sub">воинское искусство Кералы</p>
-        <p class="tradition__text">
-          Древнейшая боевая система Индии — и одновременно глубокая работа с телом.
-          Звериные стойки, низкие шаги, взрывная гибкость бёдер и позвоночника.
-          Тело становится собранным, быстрым и по-настоящему живым.
-        </p>
+      <article class="panel">
+        <div class="frame panel__frame" data-curtain>
+          <!-- ЗАМЕНИТЬ НА ФОТО: тренировка каларипаятту, вертикальный кадр 1000×1250 -->
+          <img src="assets/img/tradition-kalari.jpg" alt="Тренировка каларипаятту" width="1000" height="1250" loading="lazy" data-parallax-img="0.07">
+        </div>
+        <p class="panel__num">02</p>
+        <h3 class="panel__title">Каларипаятту</h3>
+        <p class="panel__sub">воинское искусство Кералы</p>
+        <p class="panel__text">Древнейшая боевая система Индии — и одновременно глубокая работа с телом. Звериные стойки, низкие шаги, взрывная гибкость бёдер и позвоночника. Тело становится собранным, быстрым и по-настоящему живым.</p>
         <ul class="chip-row" aria-label="Что входит в направление">
           <li class="chip">Мейтхари</li>
           <li class="chip">Вадивукал</li>
@@ -252,24 +268,15 @@
           <li class="chip">Калари-массаж</li>
         </ul>
       </article>
-
-      <article class="tradition card card--hover" data-reveal>
-        <span class="tradition__num" aria-hidden="true">03</span>
-        <svg class="tradition__icon" viewBox="0 0 64 64" fill="none" stroke="currentColor"
-             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" data-draw aria-hidden="true">
-          <path d="M18 32h28l-3 16a6 6 0 0 1-6 5H27a6 6 0 0 1-6-5z"/>
-          <path d="M14 32h36"/>
-          <path d="M32 32V18"/>
-          <path d="M32 22c0-6 4-10 10-10 0 6-4 10-10 10z"/>
-          <path d="M32 26c0-5-4-8-9-8 0 5 4 8 9 8z"/>
-        </svg>
-        <h3 class="tradition__title">Аюрведа</h3>
-        <p class="tradition__sub">образ жизни, а не диета</p>
-        <p class="tradition__text">
-          Простые ежедневные опоры: режим дня, тёплая еда, специи, сон, сезонные
-          перестройки. Разбираемся в дошах без фанатизма — и подбираем то,
-          что реально работает в российском климате и городском ритме.
-        </p>
+      <article class="panel">
+        <div class="frame panel__frame" data-curtain>
+          <!-- ЗАМЕНИТЬ НА ФОТО: аюрведические травы и специи, вертикальный кадр 1000×1250 -->
+          <img src="assets/img/tradition-ayurveda.jpg" alt="Аюрведические травы и специи" width="1000" height="1250" loading="lazy" data-parallax-img="0.07">
+        </div>
+        <p class="panel__num">03</p>
+        <h3 class="panel__title">Аюрведа</h3>
+        <p class="panel__sub">образ жизни, а не диета</p>
+        <p class="panel__text">Простые ежедневные опоры: режим дня, тёплая еда, специи, сон, сезонные перестройки. Разбираемся в дошах без фанатизма — и подбираем то, что реально работает в российском климате и городском ритме.</p>
         <ul class="chip-row" aria-label="Что входит в направление">
           <li class="chip">Диначарья</li>
           <li class="chip">Ритучарья</li>
@@ -277,23 +284,15 @@
           <li class="chip">Травы и специи</li>
         </ul>
       </article>
-
-      <article class="tradition card card--hover" data-reveal>
-        <span class="tradition__num" aria-hidden="true">04</span>
-        <svg class="tradition__icon" viewBox="0 0 64 64" fill="none" stroke="currentColor"
-             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" data-draw aria-hidden="true">
-          <circle cx="20" cy="32" r="4"/>
-          <path d="M28 22a14 14 0 0 1 0 20"/>
-          <path d="M36 16a24 24 0 0 1 0 32"/>
-          <path d="M44 10a34 34 0 0 1 0 44"/>
-        </svg>
-        <h3 class="tradition__title">Мантры и киртан</h3>
-        <p class="tradition__sub">практика звука</p>
-        <p class="tradition__text">
-          Санскрит без страха: правильное произношение, ритм, дыхание в звуке.
-          Поём вместе — от простых шлок до киртана. Голос раскрывается,
-          ум затихает, и практика становится радостью, а не задачей.
-        </p>
+      <article class="panel">
+        <div class="frame panel__frame" data-curtain>
+          <!-- ЗАМЕНИТЬ НА ФОТО: пение мантр и киртан, вертикальный кадр 1000×1250 -->
+          <img src="assets/img/tradition-mantra.jpg" alt="Пение мантр и киртан" width="1000" height="1250" loading="lazy" data-parallax-img="0.07">
+        </div>
+        <p class="panel__num">04</p>
+        <h3 class="panel__title">Мантры и киртан</h3>
+        <p class="panel__sub">практика звука</p>
+        <p class="panel__text">Санскрит без страха: правильное произношение, ритм, дыхание в звуке. Поём вместе — от простых шлок до киртана. Голос раскрывается, ум затихает, и практика становится радостью, а не задачей.</p>
         <ul class="chip-row" aria-label="Что входит в направление">
           <li class="chip">Произношение</li>
           <li class="chip">Гаятри</li>
@@ -301,8 +300,14 @@
           <li class="chip">Киртан</li>
         </ul>
       </article>
-
     </div>
+  </div>
+
+  <div class="container">
+    <p class="rail__hint" data-rail-hint>
+      <span aria-hidden="true"></span>
+      листайте вбок
+    </p>
   </div>
 </section>
 
@@ -327,6 +332,11 @@
             Посмотреть, как устроены занятия
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8h12M9 3l5 5-5 5"/></svg>
           </a>
+        </div>
+
+        <div class="frame frame--tall" data-curtain data-reveal>
+          <!-- ЗАМЕНИТЬ НА ФОТО: живой кадр с занятия, вертикальный 1000×1250 -->
+          <img src="assets/img/tradition-hatha.jpg" alt="Практика в клубе" width="1000" height="1250" loading="lazy" data-parallax-img="0.09">
         </div>
       </div>
 
@@ -578,8 +588,25 @@
   </div>
 </section>
 
+<!-- ============ ЛЕНТА-ГАЛЕРЕЯ ============
+     ЗАМЕНИТЬ НА ФОТО: 6 кадров из жизни клуба, вертикальные 3:4 -->
+<section class="strip" aria-label="Галерея практики">
+  <div class="strip__track" data-strip>
+        <figure class="strip__item"><img src="assets/img/tradition-ayurveda.jpg" alt="Аюрведические травы" loading="lazy" width="1000" height="1250"></figure>
+        <figure class="strip__item"><img src="assets/img/tradition-hatha.jpg" alt="Практика хатха-йоги" loading="lazy" width="1000" height="1250"></figure>
+        <figure class="strip__item"><img src="assets/img/tradition-mantra.jpg" alt="Янтра и звук" loading="lazy" width="1000" height="1250"></figure>
+        <figure class="strip__item"><img src="assets/img/tradition-kalari.jpg" alt="Каларипаятту" loading="lazy" width="1000" height="1250"></figure>
+        <figure class="strip__item"><img src="assets/img/divider-haze.jpg" alt="Утренний свет" loading="lazy" width="1000" height="1250"></figure>
+        <figure class="strip__item"><img src="assets/img/hero-atmos.jpg" alt="Ткань и свет" loading="lazy" width="1000" height="1250"></figure>
+  </div>
+</section>
+
 <!-- ============ 05 · ЧТО ВНУТРИ КЛУБА ============ -->
-<section class="section dark-section" id="club" aria-labelledby="club-title">
+<section class="section dark-section" id="club" aria-labelledby="club-title"
+         style="--photo-fade: var(--forest-deep); --photo-op: .7">
+  <div class="section-photo" aria-hidden="true">
+    <img src="assets/img/club-texture.jpg" alt="" width="1800" height="1150" loading="lazy" data-parallax-img="0.06">
+  </div>
   <div class="container">
     <div class="section-head">
       <p class="section-head__index" data-reveal="fade"><span>04 — Клуб</span></p>
@@ -670,7 +697,41 @@
       </div>
 
     </div>
+
+      <div class="steps-inline">
+        <div class="section-head">
+        <p class="section-head__index" data-reveal="fade"><span>Как попасть внутрь</span></p>
+        <h2 id="steps-title">
+          <span class="line-mask"><span>Три шага</span></span>
+        </h2>
+      </div>
+      <div class="stack" data-stack>
+        <article class="stack__card" data-stack-card>
+          <p class="stack__num">01</p>
+          <div>
+            <h3 class="bento__title">Заявка</h3>
+            <p class="bento__text">Пишете в Telegram: пара слов о себе, опыте и о том, что сейчас беспокоит в теле. Это не анкета на три страницы — обычное человеческое сообщение.</p>
+          </div>
+        </article>
+        <article class="stack__card" data-stack-card>
+          <p class="stack__num">02</p>
+          <div>
+            <h3 class="bento__title">Знакомство</h3>
+            <p class="bento__text">Короткий разговор: смотрим, подходит ли вам формат, какие практики стоит исключить из-за травм или состояния здоровья, с чего лучше начать именно вам.</p>
+          </div>
+        </article>
+        <article class="stack__card" data-stack-card>
+          <p class="stack__num">03</p>
+          <div>
+            <h3 class="bento__title">Приглашение</h3>
+            <p class="bento__text">Присылаем ссылку в закрытый канал. Внутри — расписание на неделю, библиотека записей и чат, где можно спросить что угодно с первого дня.</p>
+          </div>
+        </article>
+      </div>
+      </div>
+
   </div>
+
 </section>
 
 <!-- ============ 06 · ОТЗЫВЫ ============

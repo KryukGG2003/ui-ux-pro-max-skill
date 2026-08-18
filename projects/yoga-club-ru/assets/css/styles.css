@@ -1309,3 +1309,313 @@ section[id] { scroll-margin-top: clamp(4.5rem, 9vw, 6.5rem); }
 
 .quotes:focus-visible { outline-offset: 6px; }
 .quotes-nav__btn[disabled] { cursor: default; }
+
+/* ============================================================
+   12. ИЗОБРАЖЕНИЯ, ЭКРАН ЗАГРУЗКИ И СЛОЖНЫЕ СЦЕНЫ
+   ============================================================ */
+
+/* ---------- 12.1 Рамки изображений ---------- */
+.frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background: var(--surface-warm);
+  isolation: isolate;
+}
+.frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  will-change: transform;
+}
+.frame--tall  { aspect-ratio: 4 / 5; }
+.frame--wide  { aspect-ratio: 16 / 9; }
+.frame--square{ aspect-ratio: 1; }
+.frame::after {           /* мягкая тень внутрь, чтобы текст рядом не спорил */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(31,42,34,.18));
+  pointer-events: none;
+}
+.frame--plain::after { display: none; }
+
+/* Шторка: изображение открывается снизу вверх (clip-path — анимируем сам <img>) */
+.js .frame[data-curtain] img { clip-path: inset(100% 0 0 0); }
+.motion-off .frame[data-curtain] img { clip-path: none !important; }
+
+/* ---------- 12.2 Экран загрузки ---------- */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  gap: var(--space-m);
+}
+.loader[hidden] { display: none !important; }
+.loader__mark { width: 4.5rem; height: 4.5rem; color: var(--clay); }
+.loader__bar {
+  width: min(46vw, 16rem);
+  height: 1px;
+  background: var(--line-strong);
+  position: relative;
+  overflow: hidden;
+}
+.loader__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--clay);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.loader__num {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.loader__word {
+  font-size: var(--step--2);
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* ---------- 12.3 Курсор (только точный указатель) ---------- */
+.cursor, .cursor-dot { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .js .cursor {
+    opacity: 0;
+    transition: opacity .25s linear;
+    position: fixed;
+    top: 0; left: 0;
+    width: 2.5rem; height: 2.5rem;
+    border: 1px solid var(--clay);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 250;
+    display: block;
+    mix-blend-mode: multiply;
+    will-change: transform;
+  }
+  .js .cursor-dot {
+    opacity: 0;
+    transition: opacity .25s linear;
+    position: fixed;
+    top: 0; left: 0;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--clay);
+    pointer-events: none;
+    z-index: 251;
+    display: block;
+    will-change: transform;
+  }
+  .cursor.is-live, .cursor-dot.is-live { opacity: 1; }
+  .cursor.is-over-dark { border-color: var(--sand); mix-blend-mode: screen; }
+  .cursor-dot.is-over-dark { background: var(--sand); }
+}
+.motion-off .cursor, .motion-off .cursor-dot { display: none !important; }
+
+/* ---------- 12.4 Первый экран с изображением ---------- */
+.hero__photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.hero__photo img {
+  width: 100%; height: 120%;
+  object-fit: cover;
+  opacity: .9;
+  will-change: transform;
+}
+.hero__photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(102deg, var(--bg) 14%, color-mix(in srgb, var(--bg) 72%, transparent) 42%,
+                    color-mix(in srgb, var(--bg) 18%, transparent) 72%, transparent 100%),
+    linear-gradient(180deg, var(--bg) 1%, transparent 22%, transparent 74%, var(--bg) 99%);
+}
+
+/* ---------- 12.5 Манифест: крупная фраза по словам ---------- */
+.manifesto {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--space-3xl);
+  background: var(--bg-alt);
+}
+.manifesto__bg {
+  position: absolute;
+  inset: -12% 0;
+  z-index: 0;
+}
+.manifesto__bg img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: .45;
+  will-change: transform;
+}
+.manifesto__bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--bg-alt), transparent 25%, transparent 75%, var(--bg-alt));
+}
+.manifesto__inner { position: relative; z-index: 1; }
+.manifesto__text {
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  line-height: 1.22;
+  max-width: 30ch;
+  text-wrap: balance;
+}
+.manifesto__text .w { transition: color .3s var(--ease-out); }
+.js .manifesto__text .w { color: color-mix(in srgb, var(--text) 24%, transparent); }
+.manifesto__text .w.on { color: var(--text); }
+.motion-off .manifesto__text .w { color: var(--text) !important; }
+.manifesto__sign {
+  margin-top: var(--space-l);
+  font-size: var(--step--2);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+
+/* ---------- 12.6 Горизонтальная лента направлений ---------- */
+.rail { position: relative; }
+/* без JS — обычная горизонтальная прокрутка, всё доступно */
+.rail__track {
+  display: flex;
+  gap: var(--space-m);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-inline: var(--gutter);
+  padding-bottom: var(--space-s);
+}
+.rail.is-pinned .rail__track {
+  overflow: visible;
+  scroll-snap-type: none;
+  padding-bottom: 0;
+  will-change: transform;
+  align-items: start;
+}
+/* закреплённая сцена: панель обязана уместиться по высоте вместе с текстом */
+.rail.is-pinned .panel { flex-basis: min(38rem, 42vw); }
+.rail.is-pinned .panel__frame { aspect-ratio: auto; height: min(44vh, 26rem); }
+.rail.is-pinned .panel__text { font-size: var(--step--2); }
+.panel {
+  flex: 0 0 min(86vw, 30rem);
+  scroll-snap-align: center;
+  display: grid;
+  gap: var(--space-s);
+  align-content: start;
+}
+.panel__frame { aspect-ratio: 4 / 5; }
+.panel__num {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  color: var(--clay);
+}
+.panel__title { font-size: var(--step-3); }
+.panel__sub {
+  font-size: var(--step--2);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: -.5rem;
+}
+.panel__text { color: var(--text-muted); font-size: var(--step--1); max-width: 42ch; }
+.rail__hint {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: var(--step--2);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: var(--space-m);
+}
+.rail__hint span { display: block; width: 3rem; height: 1px; background: var(--line-strong); position: relative; overflow: hidden; }
+.rail__hint span::after {
+  content: ""; position: absolute; inset: 0;
+  background: var(--clay); transform-origin: left center; transform: scaleX(0);
+}
+
+/* ---------- 12.7 Секция «польза» с изображением ---------- */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: var(--space-2xl);
+  align-items: start;
+}
+.split__media { position: sticky; top: 7rem; display: grid; gap: var(--space-s); }
+.split__caption {
+  font-size: var(--step--2);
+  color: var(--text-faint);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* ---------- 12.8 Лента-галерея ---------- */
+.strip { overflow: hidden; padding-block: var(--space-l); }
+.strip__track { display: flex; gap: var(--space-s); width: max-content; will-change: transform; }
+.strip__item {
+  width: clamp(11rem, 22vw, 18rem);
+  aspect-ratio: 3 / 4;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  flex: none;
+  background: var(--surface-warm);
+}
+.strip__item img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- 12.9 Липкая стопка карточек клуба ---------- */
+.stack { display: grid; gap: var(--space-s); }
+.stack__card {
+  position: sticky;
+  border: 1px solid var(--line-invert);
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--forest-deep) 92%, #000);
+  padding: var(--space-l);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-m);
+  align-items: start;
+}
+.stack__num {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  color: var(--clay-light);
+  line-height: 1;
+}
+.dark-section .stack__card { box-shadow: 0 -20px 40px rgba(0,0,0,.25); }
+
+@media (max-width: 68rem) {
+  .split { grid-template-columns: 1fr; gap: var(--space-l); }
+  .split__media { position: static; }
+}
+@media (max-width: 34rem) {
+  .stack__card { grid-template-columns: 1fr; padding: var(--space-m); }
+  .manifesto__text { font-size: var(--step-3); }
+}
+
+/* ---------- 12.10 Фоновое изображение секции ---------- */
+.section-photo { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.section-photo img { width: 100%; height: 115%; object-fit: cover; opacity: var(--photo-op, .5); will-change: transform; }
+.section-photo::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, var(--photo-fade, var(--bg)) 0%, transparent 28%,
+                               transparent 72%, var(--photo-fade, var(--bg)) 100%);
+}
+.dark-section > .container { position: relative; z-index: 1; }
+
+/* «Три шага» внутри секции клуба — отделяем воздухом, а не новой секцией */
+.steps-inline { margin-top: var(--space-3xl); }
+.steps-inline .section-head { margin-bottom: var(--space-xl); }

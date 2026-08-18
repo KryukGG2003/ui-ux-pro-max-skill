@@ -227,6 +227,52 @@
     syncDisabled();
   }());
 
+
+  /* =========================================================
+     4b. ЭКРАН ЗАГРУЗКИ — снимается при любом исходе
+     ========================================================= */
+  var LOADER_ANIM = 1.15;   /* заставка должна быть короткой: ~1.4 сек до конца */
+  (function loader() {
+    var el = $('#loader');
+    if (!el) return;
+
+    function hide(instant) {
+      if (el.dataset.done) return;
+      el.dataset.done = '1';
+      if (instant || !motionOK) { el.hidden = true; return; }
+      gsap.to(el, {
+        opacity: 0, duration: 0.5, ease: 'power2.inOut',
+        onComplete: function () { el.hidden = true; }
+      });
+    }
+
+    if (!motionOK) { hide(true); return; }
+
+    var fill = $('#loaderFill'), num = $('#loaderNum'), mark = $('#loaderMark');
+    var shapes = $$('path, circle', mark);
+    shapes.forEach(function (sh) {
+      var len = 0;
+      try { len = sh.getTotalLength(); } catch (e) { len = 0; }
+      if (len) gsap.set(sh, { strokeDasharray: len, strokeDashoffset: len });
+    });
+
+    var tl = gsap.timeline();
+    tl.to(shapes, { strokeDashoffset: 0, duration: 0.65, stagger: 0.06, ease: 'power2.inOut' }, 0);
+    if (fill) tl.to(fill, { scaleX: 1, duration: 0.8, ease: 'power1.inOut' }, 0);
+    if (num) {
+      var o = { v: 0 };
+      tl.to(o, {
+        v: 100, duration: 0.8, ease: 'power1.inOut',
+        onUpdate: function () { num.textContent = Math.round(o.v); }
+      }, 0);
+    }
+    tl.to(el, { yPercent: -100, duration: 0.55, ease: 'expo.inOut' }, '+=0.05')
+      .add(function () { el.hidden = true; });
+
+    /* страховка: заставка не должна залипнуть ни при каких обстоятельствах */
+    setTimeout(function () { hide(false); }, 2600);
+  }());
+
   /* =========================================================
      5. АНИМАЦИИ (только при наличии GSAP и без reduced-motion)
      ========================================================= */
@@ -254,7 +300,7 @@
     });
 
     /* --- 5.2 Вступительная анимация первого экрана --- */
-    var intro = gsap.timeline({ delay: 0.15 });
+    var intro = gsap.timeline({ delay: $('#loader') ? LOADER_ANIM + 0.35 : 0.15 });
 
     intro.to('.hero .line-mask > span', {
       y: 0, duration: 1.05, stagger: 0.09, ease: 'expo.out'
@@ -484,6 +530,163 @@
         }
       );
     });
+
+
+    /* --- 5.14 Параллакс внутри рамок изображений --- */
+    $$('[data-parallax-img]').forEach(function (img) {
+      var depth = parseFloat(img.getAttribute('data-parallax-img')) || 0.08;
+      var host = img.closest('.frame, .hero__photo, .manifesto__bg, .section-photo') || img.parentElement;
+      gsap.fromTo(img,
+        { yPercent: -depth * 50 },
+        {
+          yPercent: depth * 50, ease: 'none',
+          scrollTrigger: { trigger: host, start: 'top bottom', end: 'bottom top', scrub: 0.5 }
+        });
+    });
+
+    /* --- 5.15 Шторка: изображение проявляется снизу вверх --- */
+    $$('[data-curtain] img').forEach(function (img) {
+      if (isAboveView(img)) { gsap.set(img, { clipPath: 'inset(0% 0 0 0)' }); return; }
+      var tw = { clipPath: 'inset(0% 0 0 0)', duration: 1.15, ease: 'power3.out' };
+      if (isPastStart(img)) { gsap.to(img, tw); return; }
+      tw.scrollTrigger = { trigger: img, start: 'top 88%', once: true };
+      gsap.to(img, tw);
+    });
+
+    /* --- 5.16 Манифест: слова загораются по мере прокрутки --- */
+    (function manifesto() {
+      var el = $('[data-words]');
+      if (!el) return;
+      var words = el.textContent.trim().split(/\s+/);
+      el.textContent = '';
+      words.forEach(function (w, i) {
+        var sp = document.createElement('span');
+        sp.className = 'w';
+        sp.textContent = w;
+        el.appendChild(sp);
+        if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+      });
+      var spans = $$('.w', el);
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 78%',
+        end: 'bottom 55%',
+        scrub: true,
+        onUpdate: function (self) {
+          var n = Math.round(self.progress * spans.length);
+          spans.forEach(function (sp, i) { sp.classList.toggle('on', i < n); });
+        }
+      });
+    }());
+
+    /* --- 5.17 Лента направлений: закрепляем и ведём вбок --- */
+    (function rail() {
+      var rail = $('[data-rail]'), track = $('[data-rail-track]');
+      if (!rail || !track) return;
+      var hint = $('[data-rail-hint] span');
+
+      var mm = gsap.matchMedia();
+      mm.add('(min-width: 62rem)', function () {
+        rail.classList.add('is-pinned');
+        var dist = function () { return Math.max(0, track.scrollWidth - window.innerWidth + 64); };
+        var tw = gsap.to(track, {
+          x: function () { return -dist(); },
+          ease: 'none',
+          scrollTrigger: {
+            trigger: rail,
+            pin: true,
+            scrub: 0.6,
+            start: 'top 14%',
+            end: function () { return '+=' + dist(); },
+            invalidateOnRefresh: true,
+            onUpdate: function (self) {
+              if (hint) gsap.set(hint, { scaleX: self.progress });
+            }
+          }
+        });
+        return function () {            /* откат при смене брейкпоинта */
+          rail.classList.remove('is-pinned');
+          tw.scrollTrigger && tw.scrollTrigger.kill();
+          tw.kill();
+          gsap.set(track, { clearProps: 'transform' });
+        };
+      });
+    }());
+
+    /* --- 5.18 Лента-галерея --- */
+    (function strip() {
+      var track = $('[data-strip]');
+      if (!track) return;
+      track.innerHTML = track.innerHTML + track.innerHTML;
+      var half = track.scrollWidth / 2;
+      var tl = gsap.to(track, { x: -half, duration: half / 38, ease: 'none', repeat: -1 });
+      track.parentElement.addEventListener('pointerenter', function () { tl.timeScale(0.2); });
+      track.parentElement.addEventListener('pointerleave', function () { tl.timeScale(1); });
+      ScrollTrigger.create({
+        trigger: track.parentElement, start: 'top bottom', end: 'bottom top',
+        onToggle: function (self) { self.isActive ? tl.play() : tl.pause(); }
+      });
+    }());
+
+    /* --- 5.19 Липкая стопка «три шага» --- */
+    (function stack() {
+      var cards = $$('[data-stack-card]');
+      if (!cards.length) return;
+      cards.forEach(function (card, i) {
+        card.style.top = 'calc(7rem + ' + (i * 1.4) + 'rem)';
+        if (i === cards.length - 1) return;
+        gsap.to(card, {
+          scale: 0.94, opacity: 0.55, ease: 'none',
+          scrollTrigger: {
+            trigger: cards[i + 1], start: 'top 80%', end: 'top 30%', scrub: true
+          }
+        });
+      });
+    }());
+
+    /* --- 5.20 Курсор и магнитные кнопки --- */
+    (function pointer() {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      var ring = $('#cursor'), dot = $('#cursorDot');
+      if (!ring || !dot) return;
+
+      gsap.set([ring, dot], { xPercent: -50, yPercent: -50 });
+      var rx = gsap.quickTo(ring, 'x', { duration: 0.45, ease: 'power3' });
+      var ry = gsap.quickTo(ring, 'y', { duration: 0.45, ease: 'power3' });
+      var dx = gsap.quickTo(dot, 'x', { duration: 0.12, ease: 'power3' });
+      var dy = gsap.quickTo(dot, 'y', { duration: 0.12, ease: 'power3' });
+
+      window.addEventListener('pointermove', function (e) {
+        /* до первого движения мыши кольцо не должно висеть в углу экрана */
+        if (!ring.classList.contains('is-live')) {
+          gsap.set([ring, dot], { x: e.clientX, y: e.clientY });
+          ring.classList.add('is-live'); dot.classList.add('is-live');
+        }
+        rx(e.clientX); ry(e.clientY); dx(e.clientX); dy(e.clientY);
+        /* e.target уже указывает на элемент под курсором — hit-test не нужен */
+        var over = e.target;
+        var dark = !!(over && over.closest && over.closest('.dark-section'));
+        ring.classList.toggle('is-over-dark', dark);
+        dot.classList.toggle('is-over-dark', dark);
+      }, { passive: true });
+
+      $$('a, button, .frame, input, summary').forEach(function (el) {
+        el.addEventListener('pointerenter', function () { gsap.to(ring, { scale: 1.7, duration: 0.3 }); });
+        el.addEventListener('pointerleave', function () { gsap.to(ring, { scale: 1, duration: 0.3 }); });
+      });
+
+      /* магнит: кнопка чуть тянется к курсору */
+      $$('.btn').forEach(function (btn) {
+        var qx = gsap.quickTo(btn, 'x', { duration: 0.4, ease: 'power3' });
+        var qy = gsap.quickTo(btn, 'y', { duration: 0.4, ease: 'power3' });
+        btn.addEventListener('pointermove', function (e) {
+          var r = btn.getBoundingClientRect();
+          qx((e.clientX - (r.left + r.width / 2)) * 0.22);
+          qy((e.clientY - (r.top + r.height / 2)) * 0.32);
+        });
+        btn.addEventListener('pointerleave', function () { qx(0); qy(0); });
+      });
+    }());
 
     ScrollTrigger.refresh();
     if (document.fonts && document.fonts.ready) {
