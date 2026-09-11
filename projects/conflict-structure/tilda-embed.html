@@ -1,0 +1,697 @@
+<!--
+  ===========================================================================
+  ЛЕНДИНГ «Структура конфликта» — код для блока T123 в Tilda.
+  ---------------------------------------------------------------------------
+  Как вставить:
+  1. В Tilda добавьте блок  T123 «HTML-код»  (Другое → HTML-код).
+  2. Скопируйте ВЕСЬ этот файл и вставьте в поле блока.
+  3. В настройках блока уберите внутренние отступы (Padding top/bottom = 0).
+  4. Ссылку на презентацию задайте в data-deck ниже (по умолчанию presentation.html).
+
+  Все стили изолированы префиксом .cf — они не влияют на остальные блоки Tilda
+  и не ломаются от её собственных стилей.
+  ===========================================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================================================
+   ТОКЕНЫ — с префиксом --cf-, чтобы не пересечься с переменными Tilda
+   =========================================================================== */
+.cf{
+  --cf-ink:#0B0E14;
+  --cf-ink-2:#111726;
+  --cf-text:#EAEFF7;
+  --cf-mute:#93A2BC;
+  --cf-faint:#76859F;
+
+  --cf-obj:#4DA3FF;
+  --cf-obj-soft:rgba(77,163,255,.13);
+  --cf-obj-line:rgba(77,163,255,.38);
+
+  --cf-subj:#FF7A59;
+  --cf-subj-soft:rgba(255,122,89,.13);
+  --cf-subj-line:rgba(255,122,89,.38);
+
+  --cf-line:rgba(255,255,255,.09);
+  --cf-line-2:rgba(255,255,255,.17);
+
+  --cf-display:"Playfair Display",Georgia,"Times New Roman",serif;
+  --cf-sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+
+  --cf-ease:cubic-bezier(.16,1,.3,1);
+  --cf-pad:clamp(20px,5vw,80px);
+}
+
+/* ===========================================================================
+   СБРОС ВНУТРИ БЛОКА
+   Tilda задаёт свои font-family/line-height/margin на заголовках и абзацах —
+   перекрываем их точечно, только внутри .cf
+   =========================================================================== */
+.cf,.cf *,.cf *::before,.cf *::after{box-sizing:border-box}
+.cf{
+  font-family:var(--cf-sans);
+  background:var(--cf-ink);
+  color:var(--cf-text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+  position:relative;
+  isolation:isolate;
+}
+.cf h1,.cf h2,.cf h3,.cf h4,.cf p,.cf ul,.cf ol,.cf figure,.cf blockquote{margin:0;padding:0}
+.cf ul,.cf ol{list-style:none}
+.cf img{max-width:100%;display:block}
+.cf a{color:inherit;text-decoration:none}
+.cf button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.cf strong,.cf b{font-weight:700;color:var(--cf-text)}
+
+/* ===========================================================================
+   СЕТКА И СЕКЦИИ
+   =========================================================================== */
+.cf-sec{position:relative;padding:clamp(64px,9vw,128px) var(--cf-pad);z-index:1}
+.cf-wrap{max-width:1180px;margin:0 auto;width:100%}
+.cf-sec--tint{background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,0))}
+
+.cf-eyebrow{
+  font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--cf-faint);display:flex;align-items:center;gap:11px;margin-bottom:18px;
+}
+.cf-eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--cf-obj);flex:none}
+.cf-eyebrow.s::before{background:var(--cf-subj)}
+
+.cf h1{font-family:var(--cf-display);font-weight:800;font-size:clamp(38px,6.4vw,78px);line-height:1.03;letter-spacing:-.02em}
+.cf h2{font-family:var(--cf-display);font-weight:700;font-size:clamp(28px,4.1vw,50px);line-height:1.1;letter-spacing:-.015em;margin-bottom:clamp(20px,2.6vw,32px)}
+.cf h3{font-size:clamp(17px,1.5vw,20px);font-weight:800;line-height:1.32;letter-spacing:-.01em;margin-bottom:9px}
+.cf .cf-lead{font-size:clamp(16px,1.55vw,20px);line-height:1.58;color:var(--cf-mute);max-width:70ch}
+.cf .cf-body{font-size:clamp(14.5px,1.16vw,16px);line-height:1.62;color:var(--cf-mute)}
+.cf .cf-obj{color:var(--cf-obj)}
+.cf .cf-subj{color:var(--cf-subj)}
+.cf em.cf-acc{font-family:var(--cf-display);font-style:italic;color:var(--cf-text);font-size:1.06em}
+
+/* ===========================================================================
+   ГЕРОЙ
+   =========================================================================== */
+.cf-hero{
+  min-height:min(92vh,860px);display:flex;align-items:center;
+  padding-top:clamp(80px,11vw,140px);padding-bottom:clamp(64px,8vw,110px);
+}
+.cf-hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,5vw,64px);align-items:center;width:100%}
+.cf-hero h1{max-width:15ch;margin-bottom:24px}
+.cf-hero .cf-lead{max-width:44ch}
+
+.cf-aura{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.cf-aura i{position:absolute;display:block;border-radius:50%;filter:blur(90px);opacity:.45;transition:transform 1.2s var(--cf-ease)}
+.cf-aura .a{width:min(60vw,760px);aspect-ratio:1;left:-14%;top:-14%;background:radial-gradient(circle,#1E5FA8 0%,rgba(30,95,168,0) 70%)}
+.cf-aura .b{width:min(56vw,700px);aspect-ratio:1;right:-12%;top:34%;background:radial-gradient(circle,#A33F22 0%,rgba(163,63,34,0) 70%)}
+
+.cf-hero-meta{display:flex;flex-wrap:wrap;gap:28px;margin-top:clamp(28px,3.4vw,42px)}
+.cf-hero-meta .n{font-family:var(--cf-display);font-size:clamp(30px,3.4vw,44px);font-weight:800;line-height:1}
+.cf-hero-meta .l{font-size:13px;color:var(--cf-mute);margin-top:5px;max-width:17ch;line-height:1.4}
+
+.cf-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:clamp(28px,3.4vw,40px)}
+.cf-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:15px 26px;border-radius:999px;font-size:15px;font-weight:800;
+  border:1px solid transparent;transition:transform .3s var(--cf-ease),background .3s var(--cf-ease),border-color .3s var(--cf-ease);
+}
+/* Специфичность .cf a{color:inherit} выше одиночного класса — поднимаем её здесь */
+.cf .cf-btn--primary{background:var(--cf-text);color:var(--cf-ink)}
+.cf .cf-btn--primary:hover{transform:translateY(-2px);background:#fff;color:var(--cf-ink)}
+.cf .cf-btn--ghost{border-color:var(--cf-line-2);color:var(--cf-text)}
+.cf .cf-btn--ghost:hover{transform:translateY(-2px);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.34)}
+.cf-btn:focus-visible{outline:2px solid var(--cf-obj);outline-offset:3px}
+.cf-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ===========================================================================
+   КАРТОЧКИ
+   =========================================================================== */
+.cf-card{
+  background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.018));
+  border:1px solid var(--cf-line);border-radius:18px;padding:clamp(20px,2.2vw,28px);
+  transition:transform .4s var(--cf-ease),border-color .4s var(--cf-ease);
+  height:100%;
+}
+.cf-card:hover{transform:translateY(-5px);border-color:var(--cf-line-2)}
+.cf-card .cf-num{
+  width:34px;height:34px;border-radius:50%;display:grid;place-items:center;margin-bottom:15px;
+  font-family:var(--cf-display);font-size:14px;font-weight:700;
+  border:1px solid var(--cf-obj-line);color:var(--cf-obj);background:var(--cf-obj-soft);
+}
+.cf-card.s .cf-num{border-color:var(--cf-subj-line);color:var(--cf-subj);background:var(--cf-subj-soft)}
+
+.cf-grid{display:grid;gap:clamp(12px,1.4vw,18px)}
+.cf-g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cf-g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cf-split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,4vw,56px);align-items:center}
+
+.cf-chips{display:flex;flex-wrap:wrap;gap:8px}
+.cf-chip{
+  font-size:13px;font-weight:600;padding:7px 14px;border-radius:999px;
+  border:1px solid var(--cf-line-2);color:var(--cf-mute);background:rgba(255,255,255,.03);
+}
+.cf-chip.o{border-color:var(--cf-obj-line);color:var(--cf-obj);background:var(--cf-obj-soft)}
+.cf-chip.s{border-color:var(--cf-subj-line);color:var(--cf-subj);background:var(--cf-subj-soft)}
+
+.cf-ticks{display:grid;gap:14px}
+.cf-ticks li{position:relative;padding-left:26px;font-size:clamp(14.5px,1.16vw,16px);line-height:1.55;color:var(--cf-mute)}
+.cf-ticks li::before{content:"";position:absolute;left:0;top:11px;width:13px;height:2px;border-radius:2px;background:var(--cf-obj)}
+.cf-ticks.s li::before{background:var(--cf-subj)}
+
+.cf-quote{
+  font-family:var(--cf-display);font-style:italic;font-weight:500;
+  font-size:clamp(21px,2.7vw,34px);line-height:1.4;color:var(--cf-text);max-width:24ch;
+}
+
+/* ===========================================================================
+   ПЕРЕКЛЮЧАТЕЛЬ ПОДСТРУКТУР
+   =========================================================================== */
+.cf-tabs{display:inline-flex;padding:5px;gap:5px;border-radius:999px;border:1px solid var(--cf-line-2);background:rgba(255,255,255,.03);margin-bottom:clamp(24px,3vw,36px)}
+.cf-tab{padding:11px 22px;border-radius:999px;font-size:14.5px;font-weight:800;color:var(--cf-mute);transition:all .3s var(--cf-ease);white-space:nowrap}
+.cf-tab:hover{color:var(--cf-text)}
+.cf-tab[aria-selected="true"]{background:var(--cf-obj-soft);border:1px solid var(--cf-obj-line);color:var(--cf-obj);padding:10px 21px}
+.cf-tab[aria-selected="true"][data-tab="subj"]{background:var(--cf-subj-soft);border-color:var(--cf-subj-line);color:var(--cf-subj)}
+.cf-tab:focus-visible{outline:2px solid var(--cf-obj);outline-offset:3px}
+
+.cf-panel[hidden]{display:none}
+.cf-panel .cf-card{animation:cf-rise .6s var(--cf-ease) both}
+.cf-panel .cf-card:nth-child(1){animation-delay:.02s}
+.cf-panel .cf-card:nth-child(2){animation-delay:.08s}
+.cf-panel .cf-card:nth-child(3){animation-delay:.14s}
+.cf-panel .cf-card:nth-child(4){animation-delay:.2s}
+.cf-panel .cf-card:nth-child(5){animation-delay:.26s}
+.cf-panel .cf-card:nth-child(6){animation-delay:.32s}
+@keyframes cf-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* ===========================================================================
+   СРАВНЕНИЕ ОБЪЕКТ / ПРЕДМЕТ
+   =========================================================================== */
+.cf-vs{display:grid;grid-template-columns:1fr auto 1fr;border:1px solid var(--cf-line);border-radius:22px;overflow:hidden}
+.cf-vs > div{padding:clamp(22px,2.6vw,34px)}
+.cf-vs .m{display:grid;place-items:center;padding:0 16px;background:rgba(255,255,255,.02);border-left:1px solid var(--cf-line);border-right:1px solid var(--cf-line)}
+.cf-vs .m span{font-family:var(--cf-display);font-style:italic;font-size:20px;color:var(--cf-faint)}
+.cf-vs .x{background:linear-gradient(150deg,rgba(77,163,255,.1),rgba(77,163,255,.015))}
+.cf-vs .y{background:linear-gradient(150deg,rgba(255,122,89,.1),rgba(255,122,89,.015))}
+.cf-vs h3{font-family:var(--cf-display);font-size:clamp(20px,2.1vw,26px);font-weight:700;margin-bottom:18px}
+.cf-vs dl{display:grid;gap:15px;margin:0}
+.cf-vs dt{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cf-faint);font-weight:800;margin-bottom:4px}
+.cf-vs dd{margin:0;font-size:clamp(14px,1.14vw,15.5px);line-height:1.5;color:var(--cf-mute)}
+
+/* ===========================================================================
+   КЕЙС
+   =========================================================================== */
+.cf-case{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,1.6vw,20px)}
+.cf-case .cf-card h3{font-family:var(--cf-display);font-size:clamp(19px,1.9vw,23px);font-weight:700;margin-bottom:16px}
+.cf-case dl{display:grid;gap:11px;margin:0}
+.cf-case dd{margin:0;font-size:clamp(14px,1.12vw,15px);line-height:1.55;color:var(--cf-mute)}
+.cf-case dd b{color:var(--cf-text)}
+
+/* ===========================================================================
+   ФИНАЛ
+   =========================================================================== */
+.cf-end{text-align:center}
+.cf-end h2{margin-left:auto;margin-right:auto;max-width:18ch}
+.cf-end .cf-lead{margin:0 auto}
+.cf-authors{display:flex;justify-content:center;flex-wrap:wrap;gap:36px;margin-top:clamp(30px,3.6vw,46px)}
+.cf-authors .nm{font-size:16px;font-weight:800}
+.cf-authors .rl{font-size:12.5px;color:var(--cf-faint);margin-top:3px}
+.cf-src{
+  margin-top:clamp(32px,3.8vw,48px);padding-top:24px;border-top:1px solid var(--cf-line);
+  font-size:13px;color:var(--cf-faint);line-height:1.6;
+}
+
+/* ===========================================================================
+   ПОЯВЛЕНИЕ ПРИ СКРОЛЛЕ
+   =========================================================================== */
+.cf [data-reveal]{opacity:0;transform:translateY(26px);transition:opacity .75s var(--cf-ease),transform .75s var(--cf-ease);transition-delay:var(--cf-delay,0ms)}
+.cf [data-reveal].cf-in{opacity:1;transform:none}
+
+/* ===========================================================================
+   АДАПТИВ
+   =========================================================================== */
+@media (max-width:980px){
+  .cf-hero-grid,.cf-split{grid-template-columns:1fr}
+  .cf-hero-art{order:-1;max-width:380px;margin:0 auto}
+  .cf-g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cf-vs{grid-template-columns:1fr}
+  .cf-vs .m{border-left:0;border-right:0;border-top:1px solid var(--cf-line);border-bottom:1px solid var(--cf-line);padding:14px 0}
+}
+@media (max-width:640px){
+  .cf-g2,.cf-g3,.cf-case{grid-template-columns:1fr}
+  .cf-hero{min-height:auto}
+  .cf-tabs{display:flex;width:100%}
+  .cf-tab{flex:1;text-align:center;padding:11px 10px;font-size:13.5px}
+  .cf-tab[aria-selected="true"]{padding:10px 9px}
+  .cf-hero-meta{gap:20px}
+  .cf-authors{gap:24px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .cf [data-reveal]{opacity:1;transform:none;transition:none}
+  .cf *{animation-duration:.001ms !important;transition-duration:.001ms !important}
+  .cf-aura i{transition:none}
+}
+</style>
+
+<div class="cf" data-deck="presentation.html">
+
+  <div class="cf-aura" aria-hidden="true"><i class="a"></i><i class="b"></i></div>
+
+  <!-- ============ ГЕРОЙ ============ -->
+  <section class="cf-sec cf-hero">
+    <div class="cf-wrap cf-hero-grid">
+      <div>
+        <p class="cf-eyebrow" data-reveal>Конфликтология · структура конфликта</p>
+        <h1 data-reveal style="--cf-delay:80ms">Объективная и субъективная структура конфликта</h1>
+        <p class="cf-lead" data-reveal style="--cf-delay:160ms">
+          Конфликт — не просто ссора. Это система, где у каждого элемента своя роль. Разбираем её по&nbsp;<strong>А.&nbsp;Я.&nbsp;Анцупову</strong> и <strong>А.&nbsp;И.&nbsp;Шипилову</strong>.
+        </p>
+
+        <div class="cf-hero-meta" data-reveal style="--cf-delay:240ms">
+          <div>
+            <div class="n cf-obj" data-count="5">0</div>
+            <div class="l">элементов объективной подструктуры</div>
+          </div>
+          <div>
+            <div class="n cf-subj" data-count="6">0</div>
+            <div class="l">элементов субъективной подструктуры</div>
+          </div>
+          <div>
+            <div class="n" data-count="2">0</div>
+            <div class="l">пласта, которые нельзя разделить</div>
+          </div>
+        </div>
+
+        <div class="cf-actions" data-reveal style="--cf-delay:320ms">
+          <a class="cf-btn cf-btn--primary" href="#cf-elements">
+            Разобрать по элементам
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          </a>
+          <a class="cf-btn cf-btn--ghost" id="cf-deck-link" href="presentation.html" target="_blank" rel="noopener">
+            Открыть презентацию
+            <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="cf-hero-art" data-reveal style="--cf-delay:200ms">
+        <svg viewBox="0 0 440 440" width="100%" role="img" aria-label="Две пересекающиеся области: объективная и субъективная">
+          <defs>
+            <linearGradient id="cfGo" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4DA3FF" stop-opacity=".95"/>
+              <stop offset="100%" stop-color="#4DA3FF" stop-opacity=".12"/>
+            </linearGradient>
+            <linearGradient id="cfGs" x1="1" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#FF7A59" stop-opacity=".95"/>
+              <stop offset="100%" stop-color="#FF7A59" stop-opacity=".12"/>
+            </linearGradient>
+          </defs>
+          <circle class="cf-ring" cx="175" cy="185" r="138" fill="rgba(77,163,255,.1)" stroke="url(#cfGo)" stroke-width="1.6"/>
+          <circle class="cf-ring cf-ring2" cx="265" cy="262" r="138" fill="rgba(255,122,89,.1)" stroke="url(#cfGs)" stroke-width="1.6"/>
+          <text x="92" y="170" fill="#4DA3FF" font-family="Manrope,sans-serif" font-size="13" font-weight="800" text-anchor="middle">ФАКТЫ</text>
+          <text x="348" y="292" fill="#FF7A59" font-family="Manrope,sans-serif" font-size="13" font-weight="800" text-anchor="middle">ОБРАЗЫ</text>
+          <circle class="cf-pulse" cx="220" cy="224" r="5" fill="#F7F5F1"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ПОНЯТИЕ ============ -->
+  <section class="cf-sec cf-sec--tint">
+    <div class="cf-wrap">
+      <p class="cf-eyebrow" data-reveal>01 · Исходная точка</p>
+      <h2 data-reveal style="--cf-delay:60ms">Что такое конфликт</h2>
+      <div class="cf-split">
+        <div>
+          <blockquote class="cf-quote" data-reveal style="--cf-delay:120ms">
+            «Отсутствие согласия между сторонами, проявляющееся в несовместимости позиций или действий, воспринимаемых ими как <em class="cf-acc">угроза себе</em>».
+          </blockquote>
+          <p class="cf-body" data-reveal style="--cf-delay:200ms;margin-top:22px;max-width:52ch">
+            Каждая сторона делает всё, чтобы принята была её точка зрения, и мешает другой стороне делать то же самое.
+          </p>
+          <div class="cf-chips" data-reveal style="--cf-delay:260ms;margin-top:22px">
+            <span class="cf-chip o">лат. <em>conflictus</em> — столкновение</span>
+            <span class="cf-chip">угроза идентичности</span>
+          </div>
+        </div>
+        <ul class="cf-grid" style="gap:14px">
+          <li class="cf-card" data-reveal style="--cf-delay:180ms">
+            <h3>Несовместимость</h3>
+            <p class="cf-body">Позиции или действия сторон не могут быть реализованы одновременно.</p>
+          </li>
+          <li class="cf-card" data-reveal style="--cf-delay:250ms">
+            <h3>Восприятие угрозы</h3>
+            <p class="cf-body">Стороны считывают ситуацию как посягательство на себя и свою идентичность.</p>
+          </li>
+          <li class="cf-card s" data-reveal style="--cf-delay:320ms">
+            <h3>Конфликт — это выбор</h3>
+            <p class="cf-body">Сохранить систему взаимодействий неизменной — или реконструировать и изменить её.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ СТРУКТУРА ============ -->
+  <section class="cf-sec">
+    <div class="cf-wrap">
+      <p class="cf-eyebrow" data-reveal>02 · Общая схема</p>
+      <h2 data-reveal style="--cf-delay:60ms">Две подструктуры</h2>
+      <p class="cf-lead" data-reveal style="--cf-delay:120ms;margin-bottom:clamp(26px,3vw,38px)">
+        Структура — это <strong>совокупность устойчивых связей</strong>, которые обеспечивают целостность конфликта. Каждая подструктура включает как <strong>явные</strong>, так и <strong>скрытые</strong> элементы.
+      </p>
+      <div class="cf-grid cf-g2">
+        <div class="cf-card" data-reveal style="--cf-delay:160ms">
+          <div class="cf-num">О</div>
+          <h3 class="cf-obj" style="font-family:var(--cf-display);font-size:clamp(21px,2.2vw,27px);font-weight:700">Объективная</h3>
+          <p class="cf-body">Внешние, фактические обстоятельства конфликта. Существуют независимо от того, как их видят участники: кто участвует, из-за чего идёт борьба, в каких условиях.</p>
+        </div>
+        <div class="cf-card s" data-reveal style="--cf-delay:240ms">
+          <div class="cf-num">С</div>
+          <h3 class="cf-subj" style="font-family:var(--cf-display);font-size:clamp(21px,2.2vw,27px);font-weight:700">Субъективная</h3>
+          <p class="cf-body">Внутренние, психологические компоненты. Складываются в сознании участников и во многом определяют динамику и характер взаимодействия.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ЭЛЕМЕНТЫ: ПЕРЕКЛЮЧАТЕЛЬ ============ -->
+  <section class="cf-sec cf-sec--tint" id="cf-elements">
+    <div class="cf-wrap">
+      <p class="cf-eyebrow" data-reveal>03 · Элементы</p>
+      <h2 data-reveal style="--cf-delay:60ms">Из чего состоит конфликт</h2>
+
+      <div class="cf-tabs" role="tablist" aria-label="Подструктуры конфликта" data-reveal style="--cf-delay:120ms">
+        <button class="cf-tab" role="tab" id="cf-tab-obj" data-tab="obj" aria-selected="true" aria-controls="cf-panel-obj">Объективная · 5</button>
+        <button class="cf-tab" role="tab" id="cf-tab-subj" data-tab="subj" aria-selected="false" aria-controls="cf-panel-subj" tabindex="-1">Субъективная · 6</button>
+      </div>
+
+      <div class="cf-panel cf-grid cf-g3" role="tabpanel" id="cf-panel-obj" aria-labelledby="cf-tab-obj">
+        <div class="cf-card"><div class="cf-num">1</div><h3>Участники</h3><p class="cf-body">Противоборствующие стороны, группы поддержки, наблюдатели и другие вовлечённые лица. Сторона — тот, кто имеет свою позицию и силу.</p></div>
+        <div class="cf-card"><div class="cf-num">2</div><h3>Объект</h3><p class="cf-body">То, из-за чего возникает противостояние: ресурс, статус, правило поведения, принцип справедливости. Может быть реальным и идеальным.</p></div>
+        <div class="cf-card"><div class="cf-num">3</div><h3>Предмет</h3><p class="cf-body">Основное противоречие, из-за которого стороны вступают в противоборство. Не всегда совпадает с объектом, бывает скрытым или неосознанным.</p></div>
+        <div class="cf-card"><div class="cf-num">4</div><h3>Микросреда</h3><p class="cf-body">Непосредственное окружение: локация, временные рамки, социально-психологический климат в группе участников.</p></div>
+        <div class="cf-card"><div class="cf-num">5</div><h3>Макросреда</h3><p class="cf-body">Более широкий социальный, культурный, экономический и политический контекст, влияющий на развитие конфликта.</p></div>
+      </div>
+
+      <div class="cf-panel cf-grid cf-g3" role="tabpanel" id="cf-panel-subj" aria-labelledby="cf-tab-subj" hidden>
+        <div class="cf-card s"><div class="cf-num">1</div><h3>Психологические модели ситуации</h3><p class="cf-body">У каждого участника складывается своя картина происходящего, которая не всегда совпадает с объективной реальностью.</p></div>
+        <div class="cf-card s"><div class="cf-num">2</div><h3>Мотивы действий</h3><p class="cf-body">Внутренние побуждения, толкающие участников на конфликтное поведение. Часто не осознаются и не проговариваются вслух.</p></div>
+        <div class="cf-card s"><div class="cf-num">3</div><h3>Цели участников</h3><p class="cf-body">Представления о том, чего они хотят добиться в конфликте. В отличие от мотивов — предъявляются другой стороне.</p></div>
+        <div class="cf-card s"><div class="cf-num">4</div><h3>Психические состояния</h3><p class="cf-body">Эмоциональный фон, уровень напряжения, стрессовые реакции. Высокое напряжение сужает выбор вариантов выхода.</p></div>
+        <div class="cf-card s"><div class="cf-num">5</div><h3>Образы оппонента и себя</h3><p class="cf-body">Когнитивные конструкции о другой стороне, о себе, об объекте и предмете. Часто искажены — вплоть до «демонизации» противника.</p></div>
+        <div class="cf-card s"><div class="cf-num">6</div><h3>Вероятные результаты</h3><p class="cf-body">Прогнозируемые исходы борьбы, которые участники мысленно моделируют. Оценка шансов влияет на готовность к обострению.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ОБЪЕКТ vs ПРЕДМЕТ ============ -->
+  <section class="cf-sec">
+    <div class="cf-wrap">
+      <p class="cf-eyebrow" data-reveal>04 · Частая путаница</p>
+      <h2 data-reveal style="--cf-delay:60ms">Предмет ≠ объект</h2>
+      <div class="cf-vs" data-reveal style="--cf-delay:120ms">
+        <div class="x">
+          <h3 class="cf-obj">Объект</h3>
+          <dl>
+            <div><dt>Вопрос</dt><dd>Из-за чего в принципе идёт борьба?</dd></div>
+            <div><dt>Природа</dt><dd>Ценность, которую хотят получить или сохранить</dd></div>
+            <div><dt>Устойчивость</dt><dd>Как правило, остаётся неизменным</dd></div>
+            <div><dt>Пример</dt><dd>Квартира</dd></div>
+          </dl>
+        </div>
+        <div class="m"><span>vs</span></div>
+        <div class="y">
+          <h3 class="cf-subj">Предмет</h3>
+          <dl>
+            <div><dt>Вопрос</dt><dd>Из-за чего спор возник здесь и сейчас?</dd></div>
+            <div><dt>Природа</dt><dd>Основное противоречие, «фокус» столкновения интересов</dd></div>
+            <div><dt>Устойчивость</dt><dd>Может меняться по ходу выяснения отношений</dd></div>
+            <div><dt>Пример</dt><dd>Кто будет в ней жить после развода и как делить метры</dd></div>
+          </dl>
+        </div>
+      </div>
+      <p class="cf-body" data-reveal style="--cf-delay:200ms;margin-top:22px;font-size:clamp(15px,1.25vw,17px)">
+        Если объекта нет — конфликт превращается в пустую перепалку: сторонам не за что бороться, остаётся только эмоциональное напряжение.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ СРЕДА ============ -->
+  <section class="cf-sec cf-sec--tint">
+    <div class="cf-wrap">
+      <p class="cf-eyebrow" data-reveal>05 · Контекст</p>
+      <h2 data-reveal style="--cf-delay:60ms">Среда конфликта</h2>
+      <div class="cf-grid cf-g2">
+        <div class="cf-card" data-reveal style="--cf-delay:140ms">
+          <h3 class="cf-obj" style="font-family:var(--cf-display);font-size:clamp(21px,2.2vw,27px);font-weight:700;margin-bottom:12px">Микросреда</h3>
+          <p class="cf-body">Ближайшее окружение, влияющее «изнутри»: семья, друзья, коллеги по отделу, соседи.</p>
+          <p class="cf-body" style="margin-top:13px">Может <strong>подогревать страсти</strong> («Да он тебя не уважает!») или, наоборот, гасить их. Это люди, с которыми стороны контактируют напрямую и чьё мнение для них важно.</p>
+        </div>
+        <div class="cf-card s" data-reveal style="--cf-delay:220ms">
+          <h3 class="cf-subj" style="font-family:var(--cf-display);font-size:clamp(21px,2.2vw,27px);font-weight:700;margin-bottom:12px">Макросреда</h3>
+          <p class="cf-body">«Большой мир»: социальные, экономические, политические и культурные условия — законы, традиции, уровень напряжённости в обществе.</p>
+          <p class="cf-body" style="margin-top:13px">Если в стране кризис и безработица, конфликт на работе из-за премии протекает иначе, чем в благополучное время. Макросреда может <strong>сдерживать конфликт</strong> или раздувать его до неконтролируемых масштабов.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ КЕЙС ============ -->
+  <section class="cf-sec">
+    <div class="cf-wrap">
+      <p class="cf-eyebrow" data-reveal>06 · Практика</p>
+      <h2 data-reveal style="--cf-delay:60ms">Разбор кейса по элементам</h2>
+      <p class="cf-lead" data-reveal style="--cf-delay:110ms;margin-bottom:clamp(24px,3vw,34px)">
+        Ситуация: <em class="cf-acc">бывшие супруги делят квартиру; каждый считает, что вложил больше.</em>
+      </p>
+      <div class="cf-case">
+        <div class="cf-card" data-reveal style="--cf-delay:160ms">
+          <h3 class="cf-obj">Объективная подструктура</h3>
+          <dl>
+            <dd><b>Участники:</b> бывшие супруги; группы поддержки — родители с обеих сторон; наблюдатель — общий ребёнок.</dd>
+            <dd><b>Объект:</b> квартира как имущественная ценность.</dd>
+            <dd><b>Предмет:</b> кто останется в ней жить и как делить метры.</dd>
+            <dd><b>Микросреда:</b> семьи, общие друзья, юристы, сроки судебного процесса.</dd>
+            <dd><b>Макросреда:</b> семейное законодательство, цены на жильё, нормы о «правильном» разводе.</dd>
+          </dl>
+        </div>
+        <div class="cf-card s" data-reveal style="--cf-delay:240ms">
+          <h3 class="cf-subj">Субъективная подструктура</h3>
+          <dl>
+            <dd><b>Модель ситуации:</b> у каждого своя версия того, «кто больше вложил».</dd>
+            <dd><b>Мотив:</b> не потерять лицо и получить признание вклада.</dd>
+            <dd><b>Цель:</b> закрепить за собой бо́льшую долю.</dd>
+            <dd><b>Состояние:</b> высокая тревога, усталость, обида после развода.</dd>
+            <dd><b>Образы:</b> оппонент — «корыстный», себя — «пострадавшая сторона».</dd>
+            <dd><b>Прогноз:</b> «суд всё равно будет на моей стороне».</dd>
+          </dl>
+        </div>
+      </div>
+      <p class="cf-body" data-reveal style="--cf-delay:320ms;margin-top:20px;font-size:clamp(15px,1.25vw,17px)">
+        <strong>Что даёт разбор:</strong> объект (квартира) делится по закону, но конфликт не гаснет, пока не признан реальный предмет — <span class="cf-subj">спор о признании вклада</span>.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ ВЫВОД ============ -->
+  <section class="cf-sec cf-sec--tint">
+    <div class="cf-wrap cf-split">
+      <div>
+        <p class="cf-eyebrow" data-reveal>07 · Ключевой вывод</p>
+        <h2 data-reveal style="--cf-delay:60ms">Подструктуры не существуют изолированно</h2>
+        <p class="cf-lead" data-reveal style="--cf-delay:120ms">
+          Любая <span class="cf-obj">объективная причина</span> конфликта преломляется через восприятие участников. И наоборот — <span class="cf-subj">субъективные мотивы и образы</span> во многом детерминированы объективными обстоятельствами.
+        </p>
+        <ul class="cf-ticks" data-reveal style="--cf-delay:200ms;margin-top:24px">
+          <li>Разбор только фактов даёт формальную картину.</li>
+          <li>Разбор только переживаний не находит причины.</li>
+          <li>Для полноценного анализа нужны <strong>оба пласта одновременно</strong>.</li>
+        </ul>
+      </div>
+      <div data-reveal style="--cf-delay:240ms">
+        <svg viewBox="0 0 380 330" width="100%" style="max-width:380px;margin:0 auto;display:block" role="img" aria-label="Взаимное влияние объективной и субъективной подструктур">
+          <circle cx="110" cy="120" r="72" fill="rgba(77,163,255,.13)" stroke="rgba(77,163,255,.6)" stroke-width="1.5"/>
+          <text x="110" y="118" text-anchor="middle" fill="#4DA3FF" font-family="Manrope,sans-serif" font-size="11.5" font-weight="800">ОБЪЕКТИВНОЕ</text>
+          <text x="110" y="136" text-anchor="middle" fill="#93A2BC" font-family="Manrope,sans-serif" font-size="10">факты</text>
+          <circle cx="268" cy="210" r="72" fill="rgba(255,122,89,.13)" stroke="rgba(255,122,89,.6)" stroke-width="1.5"/>
+          <text x="268" y="208" text-anchor="middle" fill="#FF7A59" font-family="Manrope,sans-serif" font-size="11.5" font-weight="800">СУБЪЕКТИВНОЕ</text>
+          <text x="268" y="226" text-anchor="middle" fill="#93A2BC" font-family="Manrope,sans-serif" font-size="10">образы</text>
+          <defs>
+            <marker id="cfArrB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(77,163,255,.9)"/></marker>
+            <marker id="cfArrO" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,122,89,.9)"/></marker>
+          </defs>
+          <path d="M172 152 C 205 168, 215 176, 232 186" fill="none" stroke="rgba(77,163,255,.75)" stroke-width="2" marker-end="url(#cfArrB)"/>
+          <path d="M212 232 C 178 224, 160 206, 142 188" fill="none" stroke="rgba(255,122,89,.75)" stroke-width="2" marker-end="url(#cfArrO)"/>
+          <text x="190" y="306" text-anchor="middle" fill="#76859F" font-family="Manrope,sans-serif" font-size="11" font-weight="700">взаимная детерминация</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ФИНАЛ ============ -->
+  <section class="cf-sec cf-end">
+    <div class="cf-wrap">
+      <p class="cf-eyebrow" style="justify-content:center" data-reveal>Итог</p>
+      <h2 data-reveal style="--cf-delay:60ms">Конфликт разбирается по элементам</h2>
+      <p class="cf-lead" data-reveal style="--cf-delay:120ms;max-width:56ch">
+        Как только названы участники, объект, предмет, среда и образы сторон — становится видно, где именно конфликт держится и что нужно менять.
+      </p>
+      <div class="cf-actions" style="justify-content:center" data-reveal>
+        <a class="cf-btn cf-btn--primary" id="cf-deck-link-2" href="presentation.html" target="_blank" rel="noopener">
+          Смотреть презентацию
+          <svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </div>
+
+      <div class="cf-authors" data-reveal>
+        <div><div class="nm">Кудякова Дарья</div><div class="rl">группа 8.536 зу</div></div>
+        <div><div class="nm">Бороздова Валерия</div><div class="rl">группа 8.536 зу</div></div>
+      </div>
+
+      <p class="cf-src" data-reveal>
+        Источник: Анцупов А. Я., Шипилов А. И. Конфликтология: учебник для вузов. — М.: ЮНИТИ-ДАНА.
+      </p>
+    </div>
+  </section>
+</div>
+
+<style>
+/* Анимация колец в герое — отдельным блоком, чтобы не мешать основным стилям */
+.cf .cf-ring{transform-origin:center;opacity:0;animation:cf-ring-in 1.1s var(--cf-ease) .15s both}
+.cf .cf-ring2{animation-delay:.32s}
+@keyframes cf-ring-in{from{opacity:0;transform:scale(.84)}to{opacity:1;transform:scale(1)}}
+.cf .cf-pulse{opacity:0;animation:cf-pulse-in .6s var(--cf-ease) 1s both,cf-beat 2.8s ease-in-out 1.7s infinite}
+@keyframes cf-pulse-in{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+@keyframes cf-beat{0%,100%{opacity:1}50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){
+  .cf .cf-ring,.cf .cf-pulse{opacity:1;animation:none}
+}
+</style>
+
+<script>
+(function(){
+  "use strict";
+
+  // Блок может быть вставлен в Tilda несколько раз — работаем с каждым экземпляром
+  var roots = document.querySelectorAll(".cf:not([data-cf-ready])");
+  if (!roots.length) return;
+
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  Array.prototype.forEach.call(roots, function(root){
+    root.setAttribute("data-cf-ready", "1");
+
+    /* ---------- Ссылка на презентацию ---------- */
+    var deck = root.getAttribute("data-deck");
+    if (deck) {
+      root.querySelectorAll("#cf-deck-link, #cf-deck-link-2").forEach(function(a){
+        a.setAttribute("href", deck);
+      });
+    }
+
+    /* ---------- Появление при скролле ---------- */
+    var revealables = root.querySelectorAll("[data-reveal]");
+    if (reduced || !("IntersectionObserver" in window)) {
+      revealables.forEach(function(el){ el.classList.add("cf-in"); });
+    } else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (e.isIntersecting) {
+            e.target.classList.add("cf-in");
+            io.unobserve(e.target);
+          }
+        });
+      }, { rootMargin: "0px 0px -12% 0px", threshold: 0.12 });
+      revealables.forEach(function(el){ io.observe(el); });
+    }
+
+    /* ---------- Счётчики в герое ---------- */
+    var counters = root.querySelectorAll("[data-count]");
+    function runCounter(el){
+      var target = parseInt(el.getAttribute("data-count"), 10) || 0;
+      if (reduced) { el.textContent = target; return; }
+      var start = null, dur = 900;
+      function step(ts){
+        if (!start) start = ts;
+        var p = Math.min((ts - start) / dur, 1);
+        el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) window.requestAnimationFrame(step);
+      }
+      window.requestAnimationFrame(step);
+    }
+    if (!("IntersectionObserver" in window)) {
+      counters.forEach(runCounter);
+    } else {
+      var cio = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (e.isIntersecting) { runCounter(e.target); cio.unobserve(e.target); }
+        });
+      }, { threshold: 0.6 });
+      counters.forEach(function(el){ cio.observe(el); });
+    }
+
+    /* ---------- Переключатель подструктур ---------- */
+    var tabs = Array.prototype.slice.call(root.querySelectorAll(".cf-tab"));
+    var panels = {
+      obj:  root.querySelector("#cf-panel-obj"),
+      subj: root.querySelector("#cf-panel-subj")
+    };
+    function selectTab(name, focus){
+      tabs.forEach(function(t){
+        var on = t.getAttribute("data-tab") === name;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.setAttribute("tabindex", on ? "0" : "-1");
+        if (on && focus) t.focus();
+      });
+      Object.keys(panels).forEach(function(k){
+        if (!panels[k]) return;
+        panels[k].hidden = (k !== name);
+      });
+    }
+    tabs.forEach(function(t){
+      t.addEventListener("click", function(){ selectTab(t.getAttribute("data-tab")); });
+      t.addEventListener("keydown", function(e){
+        if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+        e.preventDefault();
+        var i = tabs.indexOf(t);
+        var n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+        selectTab(n.getAttribute("data-tab"), true);
+      });
+    });
+
+    /* ---------- Параллакс фоновых пятен ---------- */
+    if (!reduced) {
+      var a = root.querySelector(".cf-aura .a");
+      var b = root.querySelector(".cf-aura .b");
+      if (a && b) {
+        var ticking = false;
+        window.addEventListener("scroll", function(){
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(function(){
+            var r = root.getBoundingClientRect();
+            var p = -r.top / (r.height || 1);
+            a.style.transform = "translate3d(0," + (p * 140) + "px,0)";
+            b.style.transform = "translate3d(0," + (p * -110) + "px,0)";
+            ticking = false;
+          });
+        }, { passive: true });
+      }
+    }
+
+    /* ---------- Плавная прокрутка по якорям внутри блока ---------- */
+    root.querySelectorAll('a[href^="#cf-"]').forEach(function(a){
+      a.addEventListener("click", function(e){
+        var t = root.querySelector(a.getAttribute("href"));
+        if (!t) return;
+        e.preventDefault();
+        t.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+      });
+    });
+  });
+})();
+</script>

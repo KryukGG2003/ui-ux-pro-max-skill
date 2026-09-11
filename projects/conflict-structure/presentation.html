@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Объективная и субъективная структура конфликта</title>
+<meta name="description" content="Интерактивная презентация: объективная и субъективная подструктуры конфликта по А. Я. Анцупову и А. И. Шипилову.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ТОКЕНЫ
+   Холодный синий = объективное (внешние факты).
+   Тёплый коралловый = субъективное (внутренние образы).
+   ============================================================ */
+:root{
+  --ink:#0B0E14;
+  --ink-2:#121826;
+  --ink-3:#1A2233;
+  --paper:#F7F5F1;
+  --text:#EAEFF7;
+  --mute:#93A2BC;
+  --faint:#76859F;
+
+  --obj:#4DA3FF;
+  --obj-soft:rgba(77,163,255,.14);
+  --obj-line:rgba(77,163,255,.38);
+
+  --subj:#FF7A59;
+  --subj-soft:rgba(255,122,89,.14);
+  --subj-line:rgba(255,122,89,.38);
+
+  --line:rgba(255,255,255,.09);
+  --line-2:rgba(255,255,255,.16);
+
+  --display:"Playfair Display",Georgia,"Times New Roman",serif;
+  --sans:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+
+  --r-s:10px;
+  --r-m:16px;
+  --r-l:24px;
+
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--text);
+  font-family:var(--sans);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Фоновая атмосфера: два «поля напряжения» */
+.aura{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.aura i{
+  position:absolute;display:block;border-radius:50%;
+  filter:blur(90px);opacity:.5;
+  transition:transform 1.1s var(--ease);
+}
+.aura .o1{width:56vw;height:56vw;left:-18vw;top:-22vw;background:radial-gradient(circle,#1E5FA8 0%,rgba(30,95,168,0) 70%)}
+.aura .o2{width:52vw;height:52vw;right:-16vw;bottom:-20vw;background:radial-gradient(circle,#A33F22 0%,rgba(163,63,34,0) 70%)}
+.grain{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.35;
+  background-image:radial-gradient(rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:3px 3px;
+}
+
+/* ============================================================
+   СЦЕНА 1280×720, масштабируется под экран
+   ============================================================ */
+.viewport{position:fixed;inset:0;display:grid;place-items:center;z-index:2}
+.stage{
+  position:relative;width:1280px;height:720px;
+  transform-origin:center center;
+  transform:scale(var(--scale,1));
+}
+
+.slide{
+  position:absolute;inset:0;
+  padding:66px 84px 92px;
+  display:flex;flex-direction:column;
+  opacity:0;visibility:hidden;
+  pointer-events:none;
+}
+.slide.is-active{opacity:1;visibility:visible;pointer-events:auto}
+.slide.is-out{visibility:visible}
+
+/* Направленные переходы слайдов */
+@keyframes slide-in-next{from{opacity:0;transform:translate3d(56px,0,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes slide-in-prev{from{opacity:0;transform:translate3d(-56px,0,0) scale(.985)}to{opacity:1;transform:none}}
+@keyframes slide-out-next{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(-40px,0,0) scale(.99)}}
+@keyframes slide-out-prev{from{opacity:1;transform:none}to{opacity:0;transform:translate3d(40px,0,0) scale(.99)}}
+.dir-next .slide.is-active{animation:slide-in-next .52s var(--ease-out) both}
+.dir-prev .slide.is-active{animation:slide-in-prev .52s var(--ease-out) both}
+.dir-next .slide.is-out{animation:slide-out-next .34s var(--ease) both}
+.dir-prev .slide.is-out{animation:slide-out-prev .34s var(--ease) both}
+
+/* ============================================================
+   ПОЭЛЕМЕНТНОЕ ПОЯВЛЕНИЕ
+   ============================================================ */
+[data-anim]{opacity:0}
+.slide.is-active [data-anim="up"]{animation:a-up .62s var(--ease-out) both;animation-delay:calc(var(--d,0)*1ms + 120ms)}
+.slide.is-active [data-anim="fade"]{animation:a-fade .7s var(--ease-out) both;animation-delay:calc(var(--d,0)*1ms + 120ms)}
+.slide.is-active [data-anim="left"]{animation:a-left .62s var(--ease-out) both;animation-delay:calc(var(--d,0)*1ms + 120ms)}
+.slide.is-active [data-anim="right"]{animation:a-right .62s var(--ease-out) both;animation-delay:calc(var(--d,0)*1ms + 120ms)}
+.slide.is-active [data-anim="pop"]{animation:a-pop .6s cubic-bezier(.34,1.4,.5,1) both;animation-delay:calc(var(--d,0)*1ms + 120ms)}
+.slide.is-active [data-anim="clip"]{animation:a-clip .8s var(--ease-out) both;animation-delay:calc(var(--d,0)*1ms + 120ms)}
+
+@keyframes a-up{from{opacity:0;transform:translate3d(0,26px,0)}to{opacity:1;transform:none}}
+@keyframes a-fade{from{opacity:0}to{opacity:1}}
+@keyframes a-left{from{opacity:0;transform:translate3d(-30px,0,0)}to{opacity:1;transform:none}}
+@keyframes a-right{from{opacity:0;transform:translate3d(30px,0,0)}to{opacity:1;transform:none}}
+@keyframes a-pop{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:none}}
+@keyframes a-clip{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
+
+/* ============================================================
+   ТИПОГРАФИКА
+   ============================================================ */
+.eyebrow{
+  font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--faint);display:flex;align-items:center;gap:12px;margin:0 0 18px;
+}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--obj);flex:none}
+.slide[data-tone="subj"] .eyebrow .dot{background:var(--subj)}
+
+h1{font-family:var(--display);font-weight:800;font-size:72px;line-height:1.02;letter-spacing:-.018em;margin:0}
+h2{font-family:var(--display);font-weight:700;font-size:46px;line-height:1.1;letter-spacing:-.014em;margin:0 0 22px}
+h3{font-size:19px;font-weight:800;line-height:1.3;margin:0 0 8px;letter-spacing:-.01em}
+
+.lead{font-size:20px;line-height:1.55;color:var(--mute);max-width:74ch;margin:0}
+.body{font-size:16px;line-height:1.62;color:var(--mute);margin:0}
+.tiny{font-size:13px;line-height:1.5;color:var(--faint)}
+em.accent{font-family:var(--display);font-style:italic;color:var(--text)}
+strong{color:var(--text);font-weight:700}
+.obj-t{color:var(--obj)}
+.subj-t{color:var(--subj)}
+
+.slide-head{flex:none;margin-bottom:26px}
+.slide-body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center}
+
+/* ============================================================
+   КАРТОЧКИ И СЕТКИ
+   ============================================================ */
+.card{
+  background:linear-gradient(160deg,rgba(255,255,255,.055),rgba(255,255,255,.02));
+  border:1px solid var(--line);
+  border-radius:var(--r-m);
+  padding:22px 22px 20px;
+  position:relative;
+  transition:transform .35s var(--ease),border-color .35s var(--ease),background .35s var(--ease);
+}
+.card:hover{transform:translateY(-4px);border-color:var(--line-2)}
+.card .num{
+  font-family:var(--display);font-size:13px;font-weight:700;
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid var(--obj-line);color:var(--obj);background:var(--obj-soft);
+  margin-bottom:14px;
+}
+.card.subj .num{border-color:var(--subj-line);color:var(--subj);background:var(--subj-soft)}
+.card .body{font-size:14.5px}
+
+.card.tight{padding:17px 18px 16px}
+.card.tight .num{width:26px;height:26px;font-size:12px;margin-bottom:10px}
+.card.tight h3{font-size:17px}
+.card.tight .body{font-size:13.5px;line-height:1.5}
+
+/* Нумерованные строки: компактнее карточек при той же структуре */
+.rows-num{display:grid;gap:0}
+.rows-num > div{display:grid;grid-template-columns:34px 1fr;gap:16px;padding:16px 0;border-top:1px solid var(--line)}
+.rows-num > div:first-child{border-top:0;padding-top:0}
+.rows-num .n{
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--display);font-size:13px;font-weight:700;
+  border:1px solid var(--obj-line);color:var(--obj);background:var(--obj-soft);
+}
+.rows-num .n.s{border-color:var(--subj-line);color:var(--subj);background:var(--subj-soft)}
+.rows-num h3{margin-bottom:5px}
+.rows-num .body{font-size:14.5px}
+
+.grid{display:grid;gap:16px}
+.g-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;flex:1;min-height:0}
+.split.wide-left{grid-template-columns:1.25fr .75fr}
+
+/* Чипы-теги */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;
+  border:1px solid var(--line-2);color:var(--mute);background:rgba(255,255,255,.03);
+  transition:all .3s var(--ease);
+}
+.chip.obj{border-color:var(--obj-line);color:var(--obj);background:var(--obj-soft)}
+.chip.subj{border-color:var(--subj-line);color:var(--subj);background:var(--subj-soft)}
+
+/* Список с маркером-чертой */
+.ticks{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.ticks li{position:relative;padding-left:26px;font-size:16px;line-height:1.5;color:var(--mute)}
+.ticks[style*="font-size"] li{font-size:inherit}
+.ticks li::before{
+  content:"";position:absolute;left:0;top:10px;width:12px;height:2px;border-radius:2px;background:var(--obj);
+}
+.slide[data-tone="subj"] .ticks li::before{background:var(--subj)}
+
+/* Сравнительная таблица */
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;border-radius:var(--r-l);overflow:hidden;border:1px solid var(--line)}
+.vs > div{padding:26px 28px}
+.vs .vs-mid{
+  display:grid;place-items:center;padding:0 18px;
+  background:rgba(255,255,255,.02);border-left:1px solid var(--line);border-right:1px solid var(--line);
+}
+.vs .vs-mid span{font-family:var(--display);font-style:italic;font-size:22px;color:var(--faint)}
+.vs .a{background:linear-gradient(150deg,rgba(77,163,255,.10),rgba(77,163,255,.02))}
+.vs .b{background:linear-gradient(150deg,rgba(255,122,89,.10),rgba(255,122,89,.02))}
+.vs h3{font-size:22px;font-family:var(--display);font-weight:700}
+.vs .rows{display:grid;gap:12px;margin-top:16px}
+.vs .rows div{font-size:14.5px;line-height:1.5;color:var(--mute)}
+.vs .rows span{display:block;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:700;margin-bottom:3px}
+
+/* Крупная цифра-акцент */
+.stat{display:flex;align-items:baseline;gap:14px}
+.stat.col{flex-direction:column;align-items:flex-start;gap:6px}
+.stat.col b{font-size:52px}
+.stat.col .lbl{max-width:34ch;font-size:15.5px;line-height:1.45}
+.stat b{font-family:var(--display);font-size:64px;line-height:1;font-weight:800}
+.stat .lbl{font-size:14px;line-height:1.4;color:var(--mute);max-width:22ch}
+
+/* Цитата */
+.quote{
+  font-family:var(--display);font-size:27px;line-height:1.42;font-style:italic;
+  color:var(--text);margin:0;max-width:60ch;
+}
+
+/* ============================================================
+   ТИТУЛЬНЫЙ СЛАЙД
+   ============================================================ */
+.cover{justify-content:center;padding-left:84px}
+.cover h1{max-width:16ch}
+.cover .seam{
+  position:absolute;right:84px;top:0;bottom:0;width:420px;pointer-events:none;
+}
+.authors{display:flex;gap:34px;margin-top:40px;flex-wrap:wrap}
+.author .nm{font-size:17px;font-weight:700}
+.author .rl{font-size:12.5px;color:var(--faint);letter-spacing:.06em;margin-top:3px}
+
+/* Монограммы авторов подхода */
+.person{display:flex;gap:18px;align-items:center}
+.avatar{
+  width:92px;height:92px;border-radius:50%;flex:none;position:relative;overflow:hidden;
+  display:grid;place-items:center;
+  background:linear-gradient(150deg,rgba(255,255,255,.09),rgba(255,255,255,.02));
+  border:1px solid var(--line-2);
+  font-family:var(--display);font-size:27px;font-weight:700;color:var(--mute);
+}
+.avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+/* ============================================================
+   HUD: прогресс, навигация, счётчик
+   ============================================================ */
+.progress{position:fixed;left:0;top:0;height:2px;width:100%;z-index:20;background:rgba(255,255,255,.07)}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--obj),var(--subj));transition:width .5s var(--ease-out)}
+
+.hud{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;gap:16px;
+  background:linear-gradient(0deg,rgba(11,14,20,.92),rgba(11,14,20,0));
+}
+.hud-l,.hud-r{display:flex;align-items:center;gap:10px}
+.btn{
+  height:38px;min-width:38px;padding:0 14px;border-radius:999px;
+  border:1px solid var(--line-2);background:rgba(255,255,255,.04);color:var(--text);
+  font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  transition:all .25s var(--ease);
+}
+.btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:focus-visible{outline:2px solid var(--obj);outline-offset:2px}
+.btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.btn[aria-pressed="true"]{background:var(--obj-soft);border-color:var(--obj-line);color:var(--obj)}
+.counter{font-size:13px;font-weight:700;color:var(--mute);letter-spacing:.06em;padding:0 4px;font-variant-numeric:tabular-nums}
+.counter b{color:var(--text)}
+
+/* Точки-навигация */
+.dots{display:flex;gap:6px;align-items:center;flex-wrap:wrap;max-width:520px}
+.dots button{
+  width:8px;height:8px;padding:0;border-radius:50%;border:0;cursor:pointer;
+  background:rgba(255,255,255,.2);transition:all .3s var(--ease);
+}
+.dots button:hover{background:rgba(255,255,255,.5);transform:scale(1.35)}
+.dots button[aria-current="true"]{width:22px;border-radius:999px;background:linear-gradient(90deg,var(--obj),var(--subj))}
+.dots button:focus-visible{outline:2px solid var(--obj);outline-offset:3px}
+
+/* ============================================================
+   ОБЗОР СЛАЙДОВ (клавиша O)
+   ============================================================ */
+.overview{
+  position:fixed;inset:0;z-index:40;background:#080A10;
+  padding:40px;overflow:auto;display:none;
+}
+.overview.is-open{display:block;animation:a-fade .3s var(--ease) both}
+.ov-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+.ov-head h4{font-family:var(--display);font-size:26px;margin:0;font-weight:700}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.ov-item{
+  text-align:left;cursor:pointer;border-radius:var(--r-m);padding:18px 18px 20px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);
+  font-family:var(--sans);transition:all .28s var(--ease);
+}
+.ov-item:hover{border-color:var(--obj-line);background:var(--obj-soft);transform:translateY(-3px)}
+.ov-item[aria-current="true"]{border-color:var(--obj);background:var(--obj-soft)}
+.ov-item .n{font-family:var(--display);font-size:13px;color:var(--faint);display:block;margin-bottom:8px}
+.ov-item .t{font-size:15px;font-weight:700;line-height:1.35;display:block}
+
+/* ============================================================
+   СПРАВКА
+   ============================================================ */
+.help{
+  position:fixed;inset:0;z-index:50;display:none;place-items:center;
+  background:rgba(8,10,16,.9);backdrop-filter:blur(6px);
+}
+.help.is-open{display:grid;animation:a-fade .25s var(--ease) both}
+.help-box{
+  width:min(520px,92vw);border-radius:var(--r-l);padding:30px 32px;
+  background:var(--ink-2);border:1px solid var(--line-2);
+}
+.help-box h4{font-family:var(--display);font-size:24px;margin:0 0 18px;font-weight:700}
+.keys{display:grid;gap:11px}
+.keys div{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:14px;color:var(--mute)}
+kbd{
+  font-family:var(--sans);font-size:12px;font-weight:700;color:var(--text);
+  border:1px solid var(--line-2);background:rgba(255,255,255,.06);
+  border-radius:6px;padding:4px 9px;min-width:28px;text-align:center;
+}
+
+/* Подсказка на титуле */
+.hint{
+  position:absolute;left:84px;bottom:70px;display:flex;align-items:center;gap:10px;
+  font-size:13px;color:var(--faint);font-weight:600;letter-spacing:.04em;
+}
+.hint .arrow{animation:nudge 1.9s var(--ease) infinite}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+
+/* Подсказка о повороте на узких экранах */
+.rotate-note{
+  position:fixed;left:50%;bottom:72px;transform:translateX(-50%);z-index:25;
+  font-size:12px;color:var(--faint);background:rgba(11,14,20,.9);
+  border:1px solid var(--line);border-radius:999px;padding:8px 16px;display:none;
+}
+@media (max-width:600px) and (orientation:portrait){.rotate-note{display:block}}
+
+/* ============================================================
+   ДОСТУПНОСТЬ: уважение к prefers-reduced-motion
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  [data-anim]{opacity:1}
+}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+</head>
+<body>
+
+<div class="aura" aria-hidden="true"><i class="o1"></i><i class="o2"></i></div>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="progress" aria-hidden="true"><i id="bar"></i></div>
+
+<main class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- ============ 1. ТИТУЛ ============ -->
+    <section class="slide cover" data-title="Титульный слайд">
+      <p class="eyebrow" data-anim="fade" style="--d:0"><span class="dot"></span>Конфликтология · Структура конфликта</p>
+      <h1 data-anim="up" style="--d:80">Объективная и субъективная структура конфликта</h1>
+      <p class="lead" data-anim="up" style="--d:200;margin-top:26px;max-width:46ch">
+        Разбор двух подструктур конфликта по <strong>А.&nbsp;Я.&nbsp;Анцупову</strong> и <strong>А.&nbsp;И.&nbsp;Шипилову</strong>
+      </p>
+
+      <div class="authors" data-anim="up" style="--d:320">
+        <div class="author">
+          <div class="nm">Кудякова Дарья</div>
+          <div class="rl">группа 8.536 зу</div>
+        </div>
+        <div class="author">
+          <div class="nm">Бороздова Валерия</div>
+          <div class="rl">группа 8.536 зу</div>
+        </div>
+      </div>
+
+      <div class="hint" data-anim="fade" style="--d:600">
+        <span>Пролистайте стрелками</span>
+        <span class="arrow">&rarr;</span>
+      </div>
+
+      <div class="seam" aria-hidden="true">
+        <svg viewBox="0 0 420 720" width="420" height="720">
+          <defs>
+            <linearGradient id="gObj" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4DA3FF" stop-opacity=".95"/>
+              <stop offset="100%" stop-color="#4DA3FF" stop-opacity=".1"/>
+            </linearGradient>
+            <linearGradient id="gSubj" x1="1" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#FF7A59" stop-opacity=".95"/>
+              <stop offset="100%" stop-color="#FF7A59" stop-opacity=".1"/>
+            </linearGradient>
+          </defs>
+          <!-- Два поля, которые пересекаются: объективное и субъективное -->
+          <circle class="ring r1" cx="175" cy="300" r="150" fill="rgba(77,163,255,.07)" stroke="url(#gObj)" stroke-width="1.5"/>
+          <circle class="ring r2" cx="265" cy="400" r="150" fill="rgba(255,122,89,.07)" stroke="url(#gSubj)" stroke-width="1.5"/>
+          <circle class="pulse" cx="220" cy="350" r="5" fill="#F7F5F1"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ============ 2. ПОНЯТИЕ ============ -->
+    <section class="slide" data-title="Понятие «конфликт»">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>01 · Исходная точка</p>
+        <h2 data-anim="up" style="--d:60">Понятие «конфликт»</h2>
+      </div>
+      <div class="slide-body">
+        <div class="split">
+          <div>
+            <p class="quote" data-anim="up" style="--d:140">
+              «Отсутствие согласия между двумя или более сторонами, проявляющееся в&nbsp;несовместимости позиций или действий, воспринимаемых ими как&nbsp;<em class="accent">угроза себе</em>».
+            </p>
+            <p class="body" data-anim="up" style="--d:260;margin-top:22px;max-width:56ch">
+              Каждая сторона делает всё, чтобы принята была её точка зрения, и мешает другой стороне делать то же самое.
+            </p>
+            <div class="chips" data-anim="up" style="--d:340;margin-top:22px">
+              <span class="chip obj">лат. <em>conflictus</em> — столкновение</span>
+              <span class="chip">угроза идентичности</span>
+            </div>
+          </div>
+          <div class="rows-num">
+            <div data-anim="right" style="--d:200">
+              <span class="n">1</span>
+              <div>
+                <h3>Несовместимость</h3>
+                <p class="body">Позиции или действия сторон не могут быть реализованы одновременно.</p>
+              </div>
+            </div>
+            <div data-anim="right" style="--d:300">
+              <span class="n">2</span>
+              <div>
+                <h3>Восприятие угрозы</h3>
+                <p class="body">Стороны считывают ситуацию как посягательство на себя и свою идентичность.</p>
+              </div>
+            </div>
+            <div data-anim="right" style="--d:400">
+              <span class="n s">3</span>
+              <div>
+                <h3>Конфликт — это выбор</h3>
+                <p class="body">Сохранить систему взаимодействий неизменной или реконструировать и изменить её.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3. СТРУКТУРА — СХЕМА ============ -->
+    <section class="slide" data-title="Структура конфликта: две подструктуры">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>02 · Общая схема</p>
+        <h2 data-anim="up" style="--d:60">Структура конфликта</h2>
+      </div>
+      <div class="slide-body">
+        <div class="split wide-left">
+          <div>
+            <p class="lead" data-anim="up" style="--d:140;font-size:19px">
+              Структура — это <strong>совокупность устойчивых связей</strong>, которые обеспечивают целостность конфликта. Анцупов и Шипилов выделяют в ней <span class="obj-t">две подструктуры</span>, и каждая включает как <strong>явные</strong>, так и <strong>скрытые</strong> элементы.
+            </p>
+            <div class="grid g-2" data-anim="up" style="--d:280;margin-top:28px">
+              <div class="card">
+                <div class="num">О</div>
+                <h3 class="obj-t">Объективная</h3>
+                <p class="body">Внешние, фактические обстоятельства. Существуют независимо от того, как их видят участники.</p>
+              </div>
+              <div class="card subj">
+                <div class="num">С</div>
+                <h3 class="subj-t">Субъективная</h3>
+                <p class="body">Внутренние, психологические компоненты. Складываются в сознании участников.</p>
+              </div>
+            </div>
+          </div>
+          <div data-anim="pop" style="--d:360">
+            <svg viewBox="0 0 380 380" width="100%" style="max-width:360px;display:block;margin:0 auto" class="venn" aria-label="Схема: объективная и субъективная подструктуры пересекаются">
+              <circle cx="145" cy="190" r="128" fill="rgba(77,163,255,.12)" stroke="rgba(77,163,255,.55)" stroke-width="1.5"/>
+              <circle cx="235" cy="190" r="128" fill="rgba(255,122,89,.12)" stroke="rgba(255,122,89,.55)" stroke-width="1.5"/>
+              <text x="64" y="196" fill="#4DA3FF" font-family="Manrope,sans-serif" font-size="13" font-weight="800" text-anchor="middle">ФАКТЫ</text>
+              <text x="316" y="196" fill="#FF7A59" font-family="Manrope,sans-serif" font-size="13" font-weight="800" text-anchor="middle">ОБРАЗЫ</text>
+              <text x="190" y="186" fill="#F7F5F1" font-family="Manrope,sans-serif" font-size="13" font-weight="800" text-anchor="middle">РЕАЛЬНЫЙ</text>
+              <text x="190" y="205" fill="#F7F5F1" font-family="Manrope,sans-serif" font-size="13" font-weight="800" text-anchor="middle">КОНФЛИКТ</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 4. АВТОРЫ ============ -->
+    <section class="slide" data-title="Авторы подхода">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>03 · Авторы подхода</p>
+        <h2 data-anim="up" style="--d:60">Анцупов и Шипилов</h2>
+      </div>
+      <div class="slide-body">
+        <p class="lead" data-anim="up" style="--d:120;margin-bottom:34px">
+          Авторы учебника <em class="accent">«Конфликтология»</em> — одного из базовых в российской традиции. Они предложили рассматривать структуру конфликта как систему из двух взаимосвязанных подструктур.
+        </p>
+        <div class="grid g-2" style="gap:26px">
+          <div class="card" data-anim="left" style="--d:220;padding:26px">
+            <div class="person">
+              <!-- Портрет подставляется автоматически, если положить файл в assets/ -->
+              <div class="avatar"><span>АЯ</span><img src="assets/antsupov.jpg" alt="" onerror="this.remove()"></div>
+              <div>
+                <h3 style="font-size:22px;font-family:var(--display);font-weight:700">А. Я. Анцупов</h3>
+                <p class="body" style="font-size:14px">Соавтор структурного подхода к анализу конфликта</p>
+              </div>
+            </div>
+          </div>
+          <div class="card subj" data-anim="right" style="--d:320;padding:26px">
+            <div class="person">
+              <div class="avatar"><span>АИ</span><img src="assets/shipilov.jpg" alt="" onerror="this.remove()"></div>
+              <div>
+                <h3 style="font-size:22px;font-family:var(--display);font-weight:700">А. И. Шипилов</h3>
+                <p class="body" style="font-size:14px">Соавтор структурного подхода к анализу конфликта</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chips" data-anim="up" style="--d:440;margin-top:30px">
+          <span class="chip">устойчивые связи</span>
+          <span class="chip">целостность конфликта</span>
+          <span class="chip obj">явные элементы</span>
+          <span class="chip subj">скрытые элементы</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 5. ОБЪЕКТИВНАЯ — ОБЗОР ============ -->
+    <section class="slide" data-title="Объективная подструктура">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>04 · Объективная подструктура</p>
+        <h2 data-anim="up" style="--d:60">Пять внешних элементов</h2>
+        <p class="lead" data-anim="up" style="--d:130;font-size:18px;max-width:82ch">
+          Отражает внешние, фактические обстоятельства конфликта, <strong>независимые от индивидуального восприятия</strong> его участников.
+        </p>
+      </div>
+      <div class="slide-body">
+        <div class="grid g-5">
+          <div class="card" data-anim="up" style="--d:200"><div class="num">1</div><h3>Участники</h3><p class="body">Противоборствующие стороны, группы поддержки, наблюдатели.</p></div>
+          <div class="card" data-anim="up" style="--d:280"><div class="num">2</div><h3>Объект</h3><p class="body">То, из-за чего возникает противостояние: ресурс, статус, принцип.</p></div>
+          <div class="card" data-anim="up" style="--d:360"><div class="num">3</div><h3>Предмет</h3><p class="body">Основное противоречие, из-за которого стороны вступают в борьбу.</p></div>
+          <div class="card" data-anim="up" style="--d:440"><div class="num">4</div><h3>Микросреда</h3><p class="body">Непосредственное окружение: место, время, климат в группе.</p></div>
+          <div class="card" data-anim="up" style="--d:520"><div class="num">5</div><h3>Макросреда</h3><p class="body">Социальный, культурный, экономический и политический контекст.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 6. УЧАСТНИКИ ============ -->
+    <section class="slide" data-title="Участники (субъекты) конфликта">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>04.1 · Объективная подструктура</p>
+        <h2 data-anim="up" style="--d:60">Участники конфликта</h2>
+      </div>
+      <div class="slide-body">
+        <div class="split">
+          <div>
+            <ul class="ticks" data-anim="up" style="--d:140">
+              <li><strong>Противоборствующие стороны</strong> — те, кто непосредственно «столкнулся лбами».</li>
+              <li><strong>Группы поддержки</strong> — те, кто прямо или косвенно содействует одной из сторон.</li>
+              <li><strong>Наблюдатели</strong> и другие вовлечённые лица.</li>
+            </ul>
+            <div class="card" data-anim="up" style="--d:300;margin-top:26px;background:linear-gradient(150deg,rgba(77,163,255,.1),rgba(77,163,255,.02));border-color:var(--obj-line)">
+              <h3 class="obj-t">Важный нюанс</h3>
+              <p class="body">Сторона — это не просто жертва или наблюдатель. Это тот, кто имеет <strong>свою позицию и силу</strong>. Третьи лица (подстрекатели, союзники) не являются сторонами в строгом смысле, пока не начнут действовать открыто.</p>
+            </div>
+          </div>
+          <div data-anim="right" style="--d:260">
+            <svg viewBox="0 0 420 340" width="100%" style="max-width:420px;display:block;margin:0 auto" aria-label="Схема ролей участников конфликта">
+              <!-- линия противостояния -->
+              <line x1="210" y1="42" x2="210" y2="298" stroke="rgba(255,255,255,.14)" stroke-width="1" stroke-dasharray="4 6"/>
+              <!-- сторона А -->
+              <circle cx="128" cy="150" r="42" fill="rgba(77,163,255,.16)" stroke="rgba(77,163,255,.7)" stroke-width="1.6"/>
+              <text x="128" y="156" text-anchor="middle" fill="#4DA3FF" font-family="Manrope,sans-serif" font-size="15" font-weight="800">А</text>
+              <!-- сторона Б -->
+              <circle cx="292" cy="150" r="42" fill="rgba(255,122,89,.16)" stroke="rgba(255,122,89,.7)" stroke-width="1.6"/>
+              <text x="292" y="156" text-anchor="middle" fill="#FF7A59" font-family="Manrope,sans-serif" font-size="15" font-weight="800">Б</text>
+              <!-- группы поддержки -->
+              <circle cx="62" cy="252" r="24" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.22)"/>
+              <circle cx="358" cy="252" r="24" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.22)"/>
+              <line x1="84" y1="238" x2="108" y2="184" stroke="rgba(77,163,255,.4)" stroke-width="1.2"/>
+              <line x1="336" y1="238" x2="312" y2="184" stroke="rgba(255,122,89,.4)" stroke-width="1.2"/>
+              <text x="62" y="300" text-anchor="middle" fill="#93A2BC" font-family="Manrope,sans-serif" font-size="11" font-weight="700">поддержка</text>
+              <text x="358" y="300" text-anchor="middle" fill="#93A2BC" font-family="Manrope,sans-serif" font-size="11" font-weight="700">поддержка</text>
+              <!-- наблюдатели -->
+              <circle cx="210" cy="52" r="20" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.18)" stroke-dasharray="3 3"/>
+              <text x="210" y="24" text-anchor="middle" fill="#76859F" font-family="Manrope,sans-serif" font-size="11" font-weight="700">наблюдатели</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 7. ОБЪЕКТ ============ -->
+    <section class="slide" data-title="Объект конфликта">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>04.2 · Объективная подструктура</p>
+        <h2 data-anim="up" style="--d:60">Объект конфликта</h2>
+      </div>
+      <div class="slide-body">
+        <p class="lead" data-anim="up" style="--d:130;margin-bottom:30px">
+          То, что находится <strong>в центре борьбы</strong>: реальная ценность, которую хотят заполучить или сохранить. Объект может быть как реальным, так и идеальным.
+        </p>
+        <div class="grid g-3" style="margin-bottom:26px">
+          <div class="card" data-anim="up" style="--d:220">
+            <h3 class="obj-t">Материальный</h3>
+            <div class="chips" style="margin-top:12px">
+              <span class="chip">территория</span><span class="chip">деньги</span><span class="chip">ресурс</span>
+            </div>
+          </div>
+          <div class="card" data-anim="up" style="--d:300">
+            <h3 class="obj-t">Статусный</h3>
+            <div class="chips" style="margin-top:12px">
+              <span class="chip">должность</span><span class="chip">право голоса</span>
+            </div>
+          </div>
+          <div class="card subj" data-anim="up" style="--d:380">
+            <h3 class="subj-t">Идеальный</h3>
+            <div class="chips" style="margin-top:12px">
+              <span class="chip">власть</span><span class="chip">уважение</span><span class="chip">справедливость</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" data-anim="clip" style="--d:480;border-color:var(--subj-line);background:linear-gradient(150deg,rgba(255,122,89,.1),rgba(255,122,89,.02))">
+          <p class="body" style="font-size:17px"><strong>Если объекта нет</strong> — конфликт превращается в пустую перепалку: сторонам не за что бороться, остаётся только эмоциональное напряжение.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 8. ПРЕДМЕТ / СРАВНЕНИЕ ============ -->
+    <section class="slide" data-title="Предмет конфликта: объект vs предмет">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>04.3 · Объективная подструктура</p>
+        <h2 data-anim="up" style="--d:60">Предмет ≠ объект</h2>
+      </div>
+      <div class="slide-body">
+        <div class="vs" data-anim="up" style="--d:160">
+          <div class="a">
+            <h3 class="obj-t">Объект</h3>
+            <div class="rows">
+              <div><span>Вопрос</span>Из-за чего в принципе идёт борьба?</div>
+              <div><span>Природа</span>Ценность, которую хотят получить или сохранить</div>
+              <div><span>Устойчивость</span>Как правило, остаётся неизменным</div>
+              <div><span>Пример</span>Квартира</div>
+            </div>
+          </div>
+          <div class="vs-mid"><span>vs</span></div>
+          <div class="b">
+            <h3 class="subj-t">Предмет</h3>
+            <div class="rows">
+              <div><span>Вопрос</span>Из-за чего спор возник здесь и сейчас?</div>
+              <div><span>Природа</span>Основное противоречие, «фокус» столкновения интересов</div>
+              <div><span>Устойчивость</span>Может меняться по ходу выяснения отношений</div>
+              <div><span>Пример</span>Кто будет в ней жить после развода и как делить метры</div>
+            </div>
+          </div>
+        </div>
+        <p class="body" data-anim="up" style="--d:360;margin-top:24px;font-size:17px">
+          Предмет не всегда совпадает с объектом и может быть <strong>скрытым или неосознанным</strong> — стороны спорят о метрах, а на деле борются за признание.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 9. СРЕДА ============ -->
+    <section class="slide" data-title="Среда конфликта: микро и макро">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>04.4 · Объективная подструктура</p>
+        <h2 data-anim="up" style="--d:60">Среда конфликта</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid g-2" style="gap:26px">
+          <div class="card" data-anim="left" style="--d:160;padding:28px">
+            <div class="stat" style="margin-bottom:16px">
+              <b class="obj-t">Микро</b>
+              <span class="lbl">ближайшее окружение, влияющее «изнутри»</span>
+            </div>
+            <p class="body">Семья, друзья, коллеги по отделу, соседи. Локация, временные рамки, социально-психологический климат в группе участников.</p>
+            <p class="body" style="margin-top:14px">Микросреда может <strong>подогревать страсти</strong> («Да он тебя не уважает!») или, наоборот, гасить их. Это люди, с которыми стороны контактируют напрямую и чьё мнение для них важно.</p>
+          </div>
+          <div class="card subj" data-anim="right" style="--d:260;padding:28px">
+            <div class="stat" style="margin-bottom:16px">
+              <b class="subj-t">Макро</b>
+              <span class="lbl">«большой мир», задающий правила игры</span>
+            </div>
+            <p class="body">Социальные, экономические, политические и культурные условия: законы, традиции, уровень напряжённости в обществе.</p>
+            <p class="body" style="margin-top:14px">Если в стране кризис и безработица, конфликт на работе из-за премии протекает иначе, чем в благополучное время. Макросреда может <strong>сдерживать конфликт</strong> или раздувать его до масштабов, которые стороны не контролируют.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 10. СУБЪЕКТИВНАЯ — ОБЗОР ============ -->
+    <section class="slide" data-tone="subj" data-title="Субъективная подструктура">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>05 · Субъективная подструктура</p>
+        <h2 data-anim="up" style="--d:60">Шесть внутренних элементов</h2>
+        <p class="lead" data-anim="up" style="--d:130;font-size:18px;max-width:82ch">
+          Психологические компоненты, которые формируются <strong>в сознании участников</strong> и определяют динамику конфликтного взаимодействия.
+        </p>
+      </div>
+      <div class="slide-body">
+        <div class="grid g-3" style="gap:14px">
+          <div class="card subj tight" data-anim="up" style="--d:200"><div class="num">1</div><h3>Психологические модели ситуации</h3><p class="body">Своя картина происходящего у каждого участника.</p></div>
+          <div class="card subj tight" data-anim="up" style="--d:260"><div class="num">2</div><h3>Мотивы действий</h3><p class="body">Внутренние побуждения к конфликтному поведению.</p></div>
+          <div class="card subj tight" data-anim="up" style="--d:320"><div class="num">3</div><h3>Цели участников</h3><p class="body">Представления о том, чего они хотят добиться.</p></div>
+          <div class="card subj tight" data-anim="up" style="--d:380"><div class="num">4</div><h3>Психические состояния</h3><p class="body">Эмоциональный фон, напряжение, стрессовые реакции.</p></div>
+          <div class="card subj tight" data-anim="up" style="--d:440"><div class="num">5</div><h3>Образы оппонента и себя</h3><p class="body">Когнитивные конструкции, часто искажённые.</p></div>
+          <div class="card subj tight" data-anim="up" style="--d:500"><div class="num">6</div><h3>Вероятные результаты</h3><p class="body">Исходы борьбы, которые участники мысленно моделируют.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 11. МОДЕЛИ И ОБРАЗЫ ============ -->
+    <section class="slide" data-tone="subj" data-title="Модели и образы конфликта">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>05.1 · Субъективная подструктура</p>
+        <h2 data-anim="up" style="--d:60">Модели и образы</h2>
+      </div>
+      <div class="slide-body">
+        <div class="split">
+          <div>
+            <p class="lead" data-anim="up" style="--d:130;font-size:16.5px">
+              У каждого участника складывается <strong>своя картина происходящего</strong>, которая не всегда совпадает с объективной реальностью. Образы — это конструкции о четырёх вещах:
+            </p>
+            <ul class="ticks" data-anim="up" style="--d:250;margin-top:16px;gap:9px;font-size:15px">
+              <li><strong>Образ оппонента</strong> — каким видится другая сторона.</li>
+              <li><strong>Образ себя</strong> — представление о своих качествах и правоте.</li>
+              <li><strong>Образ объекта</strong> — из-за чего, по мнению участника, возник спор.</li>
+              <li><strong>Образ предмета</strong> — понимание сути противоречия.</li>
+            </ul>
+            <div class="card subj tight" data-anim="up" style="--d:400;margin-top:18px;border-color:var(--subj-line);background:linear-gradient(150deg,rgba(255,122,89,.11),rgba(255,122,89,.02))">
+              <p class="body" style="font-size:15px">Эти образы часто <strong>искажены</strong>: происходит «демонизация» противника, а собственные действия выглядят вынужденными и оправданными.</p>
+            </div>
+          </div>
+          <div data-anim="right" style="--d:300">
+            <svg viewBox="0 0 400 360" width="100%" style="max-width:380px;display:block;margin:0 auto" aria-label="Схема искажения образа оппонента">
+              <rect x="30" y="40" width="150" height="110" rx="14" fill="rgba(77,163,255,.1)" stroke="rgba(77,163,255,.5)" stroke-width="1.4"/>
+              <text x="105" y="92" text-anchor="middle" fill="#4DA3FF" font-family="Manrope,sans-serif" font-size="12" font-weight="800">ЧТО ЕСТЬ</text>
+              <text x="105" y="113" text-anchor="middle" fill="#93A2BC" font-family="Manrope,sans-serif" font-size="11">объективно</text>
+
+              <rect x="220" y="210" width="150" height="110" rx="14" fill="rgba(255,122,89,.1)" stroke="rgba(255,122,89,.5)" stroke-width="1.4"/>
+              <text x="295" y="262" text-anchor="middle" fill="#FF7A59" font-family="Manrope,sans-serif" font-size="12" font-weight="800">ЧТО ВИДНО</text>
+              <text x="295" y="283" text-anchor="middle" fill="#93A2BC" font-family="Manrope,sans-serif" font-size="11">субъективно</text>
+
+              <path class="draw" d="M180 95 C 250 95, 230 210, 295 210" fill="none" stroke="rgba(255,255,255,.32)" stroke-width="1.6" stroke-dasharray="5 5"/>
+              <text x="258" y="160" text-anchor="middle" fill="#76859F" font-family="Manrope,sans-serif" font-size="11" font-weight="700">искажение</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 12. МОТИВЫ, ЦЕЛИ, РЕЗУЛЬТАТЫ ============ -->
+    <section class="slide" data-tone="subj" data-title="Мотивы, цели и ожидаемые результаты">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>05.2 · Субъективная подструктура</p>
+        <h2 data-anim="up" style="--d:60">Мотивы → цели → прогноз</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid g-3" style="gap:20px;align-items:start">
+          <div class="card subj" data-anim="up" style="--d:160;padding:26px">
+            <div class="num">1</div>
+            <h3 style="font-size:21px">Мотивы</h3>
+            <p class="body" style="margin-top:8px">Внутренние побуждения, которые толкают участников на конфликтное поведение. Часто не осознаются и не проговариваются вслух.</p>
+          </div>
+          <div class="card subj" data-anim="up" style="--d:280;padding:26px">
+            <div class="num">2</div>
+            <h3 style="font-size:21px">Цели</h3>
+            <p class="body" style="margin-top:8px">Представления о том, чего участник хочет добиться в конфликте. В отличие от мотивов — формулируются и предъявляются другой стороне.</p>
+          </div>
+          <div class="card subj" data-anim="up" style="--d:400;padding:26px">
+            <div class="num">3</div>
+            <h3 style="font-size:21px">Вероятные результаты</h3>
+            <p class="body" style="margin-top:8px">Прогнозируемые исходы борьбы, которые участники мысленно моделируют. Оценка шансов напрямую влияет на готовность идти на обострение.</p>
+          </div>
+        </div>
+        <p class="body" data-anim="clip" style="--d:540;margin-top:28px;font-size:17px;max-width:none">
+          Расхождение между <span class="subj-t">заявленной целью</span> и <span class="subj-t">реальным мотивом</span> — одна из главных причин, по которой конфликт не разрешается «по существу».
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 13. ПСИХИЧЕСКИЕ СОСТОЯНИЯ ============ -->
+    <section class="slide" data-tone="subj" data-title="Актуальные психические состояния">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>05.3 · Субъективная подструктура</p>
+        <h2 data-anim="up" style="--d:60">Актуальные психические состояния</h2>
+      </div>
+      <div class="slide-body">
+        <div class="split">
+          <div>
+            <p class="lead" data-anim="up" style="--d:130">
+              Эмоциональный фон, уровень напряжения и стрессовые реакции, которые <strong>влияют на поведение прямо в моменте</strong>.
+            </p>
+            <ul class="ticks" data-anim="up" style="--d:260;margin-top:24px">
+              <li>Высокое напряжение <strong>сужает выбор</strong> — участник видит меньше вариантов выхода.</li>
+              <li>Состояние меняется по ходу конфликта, поэтому одни и те же аргументы срабатывают по-разному.</li>
+              <li>Это единственный элемент структуры, который может измениться за минуты.</li>
+            </ul>
+          </div>
+          <div data-anim="right" style="--d:300">
+            <svg viewBox="0 0 400 300" width="100%" style="max-width:420px;display:block;margin:0 auto" aria-label="График роста напряжения и сужения вариантов выхода">
+              <line x1="44" y1="250" x2="376" y2="250" stroke="rgba(255,255,255,.16)" stroke-width="1"/>
+              <line x1="44" y1="36" x2="44" y2="250" stroke="rgba(255,255,255,.16)" stroke-width="1"/>
+              <path class="draw" d="M44 236 C 130 228, 168 150, 210 104 S 300 52, 376 44" fill="none" stroke="#FF7A59" stroke-width="2.4" stroke-linecap="round"/>
+              <path class="draw" d="M44 66 C 140 82, 190 176, 240 210 S 320 244, 376 246" fill="none" stroke="#4DA3FF" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="6 5"/>
+              <text x="376" y="30" text-anchor="end" fill="#FF7A59" font-family="Manrope,sans-serif" font-size="11" font-weight="800">напряжение</text>
+              <text x="376" y="268" text-anchor="end" fill="#4DA3FF" font-family="Manrope,sans-serif" font-size="11" font-weight="800">варианты выхода</text>
+              <text x="44" y="280" fill="#76859F" font-family="Manrope,sans-serif" font-size="11">время конфликта →</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 14. ВЗАИМОСВЯЗЬ ============ -->
+    <section class="slide" data-title="Взаимосвязь подструктур">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>06 · Ключевой вывод</p>
+        <h2 data-anim="up" style="--d:60">Подструктуры не существуют изолированно</h2>
+      </div>
+      <div class="slide-body">
+        <div class="split">
+          <div>
+            <p class="lead" data-anim="up" style="--d:140;font-size:19px">
+              Любая <span class="obj-t">объективная причина</span> конфликта неизбежно преломляется через субъективные восприятия и оценки участников. И наоборот — <span class="subj-t">субъективные мотивы и образы</span> во многом детерминированы объективными обстоятельствами.
+            </p>
+            <div class="card" data-anim="clip" style="--d:300;margin-top:26px;border-color:var(--line-2)">
+              <p class="body" style="font-size:17px">Поэтому для полноценного анализа конфликта <strong>необходимо рассматривать оба пласта</strong>. Разбор только фактов даёт формальную картину, разбор только переживаний — не находит причины.</p>
+            </div>
+          </div>
+          <div data-anim="pop" style="--d:340">
+            <svg viewBox="0 0 380 330" width="100%" style="max-width:360px;display:block;margin:0 auto" aria-label="Схема взаимного влияния объективной и субъективной подструктур">
+              <circle cx="110" cy="120" r="72" fill="rgba(77,163,255,.13)" stroke="rgba(77,163,255,.6)" stroke-width="1.5"/>
+              <text x="110" y="118" text-anchor="middle" fill="#4DA3FF" font-family="Manrope,sans-serif" font-size="12" font-weight="800">ОБЪЕКТИВНОЕ</text>
+              <text x="110" y="136" text-anchor="middle" fill="#93A2BC" font-family="Manrope,sans-serif" font-size="10">факты</text>
+
+              <circle cx="268" cy="210" r="72" fill="rgba(255,122,89,.13)" stroke="rgba(255,122,89,.6)" stroke-width="1.5"/>
+              <text x="268" y="208" text-anchor="middle" fill="#FF7A59" font-family="Manrope,sans-serif" font-size="12" font-weight="800">СУБЪЕКТИВНОЕ</text>
+              <text x="268" y="226" text-anchor="middle" fill="#93A2BC" font-family="Manrope,sans-serif" font-size="10">образы</text>
+
+              <path class="draw" d="M172 152 C 205 168, 215 176, 232 186" fill="none" stroke="rgba(77,163,255,.75)" stroke-width="2" marker-end="url(#arrowB)"/>
+              <path class="draw" d="M212 232 C 178 224, 160 206, 142 188" fill="none" stroke="rgba(255,122,89,.75)" stroke-width="2" marker-end="url(#arrowO)"/>
+              <defs>
+                <marker id="arrowB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(77,163,255,.9)"/></marker>
+                <marker id="arrowO" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="rgba(255,122,89,.9)"/></marker>
+              </defs>
+              <text x="190" y="308" text-anchor="middle" fill="#76859F" font-family="Manrope,sans-serif" font-size="11" font-weight="700">взаимная детерминация</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 15. КЕЙС ============ -->
+    <section class="slide" data-title="Разбор кейса по элементам">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>07 · Практика</p>
+        <h2 data-anim="up" style="--d:60">Разбор кейса по элементам</h2>
+        <p class="lead" data-anim="up" style="--d:120;font-size:17px;max-width:86ch">
+          Ситуация: <em class="accent">бывшие супруги делят квартиру; каждый считает, что вложил больше.</em>
+        </p>
+      </div>
+      <div class="slide-body">
+        <div class="grid g-2" style="gap:20px">
+          <div class="card" data-anim="left" style="--d:200;padding:20px">
+            <h3 class="obj-t" style="font-size:20px;margin-bottom:14px">Объективная подструктура</h3>
+            <div class="rows" style="display:grid;gap:9px">
+              <div class="body" style="font-size:14px"><strong>Участники:</strong> бывшие супруги; группы поддержки — родители с обеих сторон; наблюдатель — общий ребёнок.</div>
+              <div class="body" style="font-size:14px"><strong>Объект:</strong> квартира как имущественная ценность.</div>
+              <div class="body" style="font-size:14px"><strong>Предмет:</strong> кто останется в ней жить и как делить метры.</div>
+              <div class="body" style="font-size:14px"><strong>Микросреда:</strong> семьи, общие друзья, юристы, сроки судебного процесса.</div>
+              <div class="body" style="font-size:14px"><strong>Макросреда:</strong> семейное законодательство, цены на жильё, нормы о «правильном» разводе.</div>
+            </div>
+          </div>
+          <div class="card subj" data-anim="right" style="--d:320;padding:20px">
+            <h3 class="subj-t" style="font-size:20px;margin-bottom:14px">Субъективная подструктура</h3>
+            <div class="rows" style="display:grid;gap:9px">
+              <div class="body" style="font-size:14px"><strong>Модель ситуации:</strong> у каждого своя версия того, «кто больше вложил».</div>
+              <div class="body" style="font-size:14px"><strong>Мотив:</strong> не потерять лицо и получить признание вклада.</div>
+              <div class="body" style="font-size:14px"><strong>Цель:</strong> закрепить за собой бо́льшую долю.</div>
+              <div class="body" style="font-size:14px"><strong>Состояние:</strong> высокая тревога, усталость, обида после развода.</div>
+              <div class="body" style="font-size:14px"><strong>Образы:</strong> оппонент — «корыстный», себя — «пострадавшая сторона».</div>
+              <div class="body" style="font-size:14px"><strong>Прогноз:</strong> «суд всё равно будет на моей стороне».</div>
+            </div>
+          </div>
+        </div>
+        <p class="body" data-anim="up" style="--d:460;margin-top:16px;font-size:15px">
+          <strong>Что даёт разбор:</strong> объект (квартира) делится по закону, но конфликт не гаснет, пока не признан реальный предмет — <span class="subj-t">спор о признании вклада</span>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 16. ИТОГИ ============ -->
+    <section class="slide" data-title="Итоги">
+      <div class="slide-head">
+        <p class="eyebrow" data-anim="fade"><span class="dot"></span>08 · Итоги</p>
+        <h2 data-anim="up" style="--d:60">Что важно запомнить</h2>
+      </div>
+      <div class="slide-body">
+        <div class="grid g-2" style="gap:16px">
+          <div class="card" data-anim="up" style="--d:160;padding:22px">
+            <div class="stat col"><b class="obj-t">01</b><span class="lbl">Структура — это устойчивые связи, обеспечивающие целостность конфликта</span></div>
+          </div>
+          <div class="card" data-anim="up" style="--d:240;padding:22px">
+            <div class="stat col"><b class="obj-t">02</b><span class="lbl">Объективная подструктура: участники, объект, предмет, микро- и макросреда</span></div>
+          </div>
+          <div class="card subj" data-anim="up" style="--d:320;padding:22px">
+            <div class="stat col"><b class="subj-t">03</b><span class="lbl">Субъективная: модели, мотивы, цели, состояния, образы, прогноз результатов</span></div>
+          </div>
+          <div class="card subj" data-anim="up" style="--d:400;padding:22px">
+            <div class="stat col"><b class="subj-t">04</b><span class="lbl">Оба пласта связаны: анализировать конфликт нужно одновременно по обоим</span></div>
+          </div>
+        </div>
+        <p class="body" data-anim="clip" style="--d:520;margin-top:20px;font-size:16px">
+          Каждая подструктура включает <strong>явные</strong> и <strong>скрытые</strong> элементы — и чаще всего именно скрытые определяют, разрешится конфликт или повторится.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 17. ФИНАЛ ============ -->
+    <section class="slide cover" data-title="Спасибо за внимание">
+      <p class="eyebrow" data-anim="fade"><span class="dot"></span>Конец</p>
+      <h1 data-anim="up" style="--d:80;font-size:64px;max-width:14ch">Спасибо за внимание</h1>
+      <div data-anim="up" style="--d:240;margin-top:34px">
+        <p class="tiny" style="letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:0 0 12px">Источник</p>
+        <p class="body" style="max-width:52ch">Анцупов А. Я., Шипилов А. И. Конфликтология: учебник для вузов. — М.: ЮНИТИ-ДАНА.</p>
+      </div>
+      <div class="authors" data-anim="up" style="--d:360">
+        <div class="author"><div class="nm">Кудякова Дарья</div><div class="rl">группа 8.536 зу</div></div>
+        <div class="author"><div class="nm">Бороздова Валерия</div><div class="rl">группа 8.536 зу</div></div>
+      </div>
+      <div class="seam" aria-hidden="true">
+        <svg viewBox="0 0 420 720" width="420" height="720">
+          <circle class="ring r1" cx="195" cy="340" r="140" fill="rgba(77,163,255,.07)" stroke="url(#gObj)" stroke-width="1.5"/>
+          <circle class="ring r2" cx="245" cy="380" r="140" fill="rgba(255,122,89,.07)" stroke="url(#gSubj)" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<div class="rotate-note">Поверните телефон горизонтально</div>
+
+<!-- ======= HUD ======= -->
+<div class="hud">
+  <div class="hud-l">
+    <button class="btn" id="prev" aria-label="Предыдущий слайд"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="btn" id="next" aria-label="Следующий слайд"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+    <span class="counter"><b id="cur">1</b> / <span id="total">17</span></span>
+  </div>
+
+  <nav class="dots" id="dots" aria-label="Навигация по слайдам"></nav>
+
+  <div class="hud-r">
+    <button class="btn" id="play" aria-pressed="false" aria-label="Автопоказ">
+      <svg viewBox="0 0 24 24" id="playIcon"><path d="M6 4l14 8-14 8V4z"/></svg>
+      <span id="playLabel">Автопоказ</span>
+    </button>
+    <button class="btn" id="grid" aria-label="Все слайды"><svg viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg></button>
+    <button class="btn" id="full" aria-label="Во весь экран"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <button class="btn" id="helpBtn" aria-label="Справка">?</button>
+  </div>
+</div>
+
+<!-- ======= ОБЗОР ======= -->
+<div class="overview" id="overview" role="dialog" aria-label="Все слайды">
+  <div class="ov-head">
+    <h4>Все слайды</h4>
+    <button class="btn" id="ovClose">Закрыть</button>
+  </div>
+  <div class="ov-grid" id="ovGrid"></div>
+</div>
+
+<!-- ======= СПРАВКА ======= -->
+<div class="help" id="help" role="dialog" aria-label="Горячие клавиши">
+  <div class="help-box">
+    <h4>Управление</h4>
+    <div class="keys">
+      <div><span>Следующий слайд</span><span><kbd>→</kbd> <kbd>Space</kbd></span></div>
+      <div><span>Предыдущий слайд</span><span><kbd>←</kbd></span></div>
+      <div><span>Первый / последний</span><span><kbd>Home</kbd> <kbd>End</kbd></span></div>
+      <div><span>Все слайды</span><span><kbd>O</kbd></span></div>
+      <div><span>Автопоказ</span><span><kbd>P</kbd></span></div>
+      <div><span>Полный экран</span><span><kbd>F</kbd></span></div>
+      <div><span>Закрыть окно</span><span><kbd>Esc</kbd></span></div>
+      <div><span>На телефоне</span><span>свайп влево / вправо</span></div>
+    </div>
+    <button class="btn" id="helpClose" style="margin-top:22px;width:100%">Понятно</button>
+  </div>
+</div>
+
+<p class="sr-only" aria-live="polite" id="live"></p>
+
+<style>
+/* Анимации SVG-схем */
+.ring{transform-origin:center;opacity:0}
+.slide.is-active .ring{animation:ring-in 1.1s var(--ease-out) both}
+.slide.is-active .ring.r2{animation-delay:.18s}
+@keyframes ring-in{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:scale(1)}}
+
+.pulse{opacity:0}
+.slide.is-active .pulse{animation:pulse-in .6s var(--ease-out) .9s both,pulse-beat 2.6s ease-in-out 1.5s infinite}
+@keyframes pulse-in{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse-beat{0%,100%{opacity:1}50%{opacity:.25}}
+
+.venn circle{transform-origin:center;opacity:0}
+.slide.is-active .venn circle:nth-of-type(1){animation:ring-in .9s var(--ease-out) .35s both}
+.slide.is-active .venn circle:nth-of-type(2){animation:ring-in .9s var(--ease-out) .52s both}
+.venn text{opacity:0}
+.slide.is-active .venn text{animation:a-fade .6s var(--ease) .95s both}
+
+/* Заготовка для JS-рисования линий */
+.draw{opacity:0}
+.slide.is-active .draw{opacity:1}
+
+@media (prefers-reduced-motion:reduce){
+  .ring,.pulse,.venn circle,.venn text,.draw{opacity:1 !important;animation:none !important}
+}
+</style>
+
+<script>
+(function(){
+  "use strict";
+
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var stage   = document.getElementById("stage");
+  var slides  = Array.prototype.slice.call(stage.querySelectorAll(".slide"));
+  var bar     = document.getElementById("bar");
+  var curEl   = document.getElementById("cur");
+  var totalEl = document.getElementById("total");
+  var dotsEl  = document.getElementById("dots");
+  var ovGrid  = document.getElementById("ovGrid");
+  var overview= document.getElementById("overview");
+  var help    = document.getElementById("help");
+  var live    = document.getElementById("live");
+
+  var index = 0;
+  var playing = false;
+  var timer = null;
+  var AUTOPLAY_MS = 9000;
+
+  totalEl.textContent = slides.length;
+
+  /* ---------- Масштабирование сцены 1280×720 под окно ---------- */
+  function fit(){
+    var pad = window.innerWidth < 760 ? 8 : 24;
+    var s = Math.min(
+      (window.innerWidth  - pad * 2) / 1280,
+      (window.innerHeight - pad * 2) / 720
+    );
+    stage.style.setProperty("--scale", s);
+  }
+  window.addEventListener("resize", fit, { passive: true });
+  fit();
+
+  /* ---------- Навигация по точкам и обзор ---------- */
+  slides.forEach(function(sl, i){
+    var title = sl.getAttribute("data-title") || ("Слайд " + (i + 1));
+
+    var d = document.createElement("button");
+    d.type = "button";
+    d.setAttribute("aria-label", (i + 1) + ". " + title);
+    d.addEventListener("click", function(){ go(i); });
+    dotsEl.appendChild(d);
+
+    var o = document.createElement("button");
+    o.type = "button";
+    o.className = "ov-item";
+    o.innerHTML = '<span class="n">' + String(i + 1).padStart(2, "0") + '</span><span class="t"></span>';
+    o.querySelector(".t").textContent = title;
+    o.addEventListener("click", function(){ closeOverview(); go(i); });
+    ovGrid.appendChild(o);
+  });
+  var dotBtns = Array.prototype.slice.call(dotsEl.children);
+  var ovBtns  = Array.prototype.slice.call(ovGrid.children);
+
+  /* ---------- Рисование линий в SVG-схемах ---------- */
+  function drawPaths(slide){
+    if (reduced) return;
+    slide.querySelectorAll(".draw").forEach(function(p){
+      if (typeof p.getTotalLength !== "function") return;
+      // У пунктирных линий свой dasharray — их не «рисуем», а проявляем
+      if (p.getAttribute("stroke-dasharray")) {
+        p.style.opacity = 0;
+        p.animate(
+          [{ opacity: 0 }, { opacity: 1 }],
+          { duration: 700, delay: 500, easing: "ease-out", fill: "forwards" }
+        );
+        return;
+      }
+      var len = p.getTotalLength();
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+      p.style.opacity = 1;
+      p.animate(
+        [{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
+        { duration: 900, delay: 600, easing: "cubic-bezier(.16,1,.3,1)", fill: "forwards" }
+      );
+    });
+  }
+
+  /* ---------- Смена слайда ---------- */
+  function go(next, dir){
+    next = Math.max(0, Math.min(slides.length - 1, next));
+    if (next === index && slides[index].classList.contains("is-active")) return;
+
+    var direction = dir || (next > index ? "next" : "prev");
+    var prevSlide = slides[index];
+
+    stage.classList.remove("dir-next", "dir-prev");
+    // reflow, чтобы анимация перезапустилась
+    void stage.offsetWidth;
+    stage.classList.add("dir-" + direction);
+
+    if (prevSlide && prevSlide !== slides[next]) {
+      prevSlide.classList.remove("is-active");
+      prevSlide.classList.add("is-out");
+      window.setTimeout(function(){ prevSlide.classList.remove("is-out"); }, 360);
+    }
+
+    index = next;
+    var cur = slides[index];
+    cur.classList.add("is-active");
+    drawPaths(cur);
+
+    curEl.textContent = index + 1;
+    bar.style.width = ((index + 1) / slides.length * 100) + "%";
+    live.textContent = (index + 1) + " из " + slides.length + ". " + (cur.getAttribute("data-title") || "");
+
+    dotBtns.forEach(function(b, i){ b.setAttribute("aria-current", i === index ? "true" : "false"); });
+    ovBtns.forEach(function(b, i){ b.setAttribute("aria-current", i === index ? "true" : "false"); });
+
+    if (location.hash !== "#" + (index + 1)) {
+      history.replaceState(null, "", "#" + (index + 1));
+    }
+    if (playing) restartTimer();
+  }
+
+  function nextSlide(){ index >= slides.length - 1 ? go(0, "next") : go(index + 1, "next"); }
+  function prevSlide(){ go(index - 1, "prev"); }
+
+  /* ---------- Автопоказ ---------- */
+  var playBtn = document.getElementById("play");
+  var playIcon = document.getElementById("playIcon");
+  var playLabel = document.getElementById("playLabel");
+
+  function restartTimer(){
+    window.clearInterval(timer);
+    timer = window.setInterval(nextSlide, AUTOPLAY_MS);
+  }
+  function togglePlay(){
+    playing = !playing;
+    playBtn.setAttribute("aria-pressed", playing ? "true" : "false");
+    playLabel.textContent = playing ? "Пауза" : "Автопоказ";
+    playIcon.innerHTML = playing
+      ? '<path d="M7 4v16M17 4v16"/>'
+      : '<path d="M6 4l14 8-14 8V4z"/>';
+    if (playing) restartTimer(); else window.clearInterval(timer);
+  }
+  playBtn.addEventListener("click", togglePlay);
+
+  /* ---------- Кнопки ---------- */
+  document.getElementById("next").addEventListener("click", nextSlide);
+  document.getElementById("prev").addEventListener("click", prevSlide);
+
+  function openOverview(){ overview.classList.add("is-open"); }
+  function closeOverview(){ overview.classList.remove("is-open"); }
+  document.getElementById("grid").addEventListener("click", openOverview);
+  document.getElementById("ovClose").addEventListener("click", closeOverview);
+
+  document.getElementById("helpBtn").addEventListener("click", function(){ help.classList.add("is-open"); });
+  document.getElementById("helpClose").addEventListener("click", function(){ help.classList.remove("is-open"); });
+  help.addEventListener("click", function(e){ if (e.target === help) help.classList.remove("is-open"); });
+
+  document.getElementById("full").addEventListener("click", function(){
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen();
+  });
+
+  /* ---------- Клавиатура ---------- */
+  document.addEventListener("keydown", function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    switch (e.key) {
+      case "ArrowRight": case "PageDown": case " ": e.preventDefault(); nextSlide(); break;
+      case "ArrowLeft":  case "PageUp":   e.preventDefault(); prevSlide(); break;
+      case "Home": e.preventDefault(); go(0, "prev"); break;
+      case "End":  e.preventDefault(); go(slides.length - 1, "next"); break;
+      case "o": case "O": case "щ": case "Щ":
+        overview.classList.contains("is-open") ? closeOverview() : openOverview(); break;
+      case "p": case "P": case "з": case "З": togglePlay(); break;
+      case "f": case "F": case "а": case "А": document.getElementById("full").click(); break;
+      case "?": help.classList.add("is-open"); break;
+      case "Escape": closeOverview(); help.classList.remove("is-open"); break;
+    }
+  });
+
+  /* ---------- Свайпы ---------- */
+  var tx = 0, ty = 0;
+  document.addEventListener("touchstart", function(e){
+    tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+  }, { passive: true });
+  document.addEventListener("touchend", function(e){
+    var dx = e.changedTouches[0].clientX - tx;
+    var dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) dx < 0 ? nextSlide() : prevSlide();
+  }, { passive: true });
+
+  /* ---------- Параллакс фоновых пятен ---------- */
+  if (!reduced) {
+    var o1 = document.querySelector(".aura .o1");
+    var o2 = document.querySelector(".aura .o2");
+    window.addEventListener("pointermove", function(e){
+      var x = (e.clientX / window.innerWidth - .5);
+      var y = (e.clientY / window.innerHeight - .5);
+      o1.style.transform = "translate3d(" + (x * 42) + "px," + (y * 30) + "px,0)";
+      o2.style.transform = "translate3d(" + (x * -38) + "px," + (y * -26) + "px,0)";
+    }, { passive: true });
+  }
+
+  /* ---------- Старт ---------- */
+  var fromHash = parseInt((location.hash || "").replace("#", ""), 10);
+  go(isNaN(fromHash) ? 0 : fromHash - 1, "next");
+})();
+</script>
+</body>
+</html>
